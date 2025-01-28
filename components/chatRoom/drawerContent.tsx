@@ -1,0 +1,114 @@
+import React, { useState, useEffect } from 'react';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { toChatRoomName, toChatRoomListDate } from '@/utils/utils';
+
+const DrawerContent = (props: any) => {
+  const { navigation, chatRoomList, chatRoom, user } = props;
+  const [searchText, setSearchText] = useState('');
+
+  // 過濾聊天房間列表
+  // const filteredChatRoomList = chatRoomList.filter((item: any) =>
+  //   item.chatRoomName.toLowerCase().includes(searchText.toLowerCase())
+  // );
+
+  const handleOnPress = (item: any) => {
+    navigation.navigate(item.chatRoomId, { chatRoomName: item.chatRoomName });
+  };
+
+  const renderItem = ({ item }: any) => {
+    const { members, chatRoomName, groupType, lastMessage, lastMessageTimestamp } = item;
+    const chatRoomTitle = toChatRoomName(members, user, chatRoomName, groupType);
+    const isActive = chatRoom.chatRoomId === item.chatRoomId;
+    return (
+      <TouchableOpacity
+        style={[styles.chatContainer, isActive && styles.isActive]}
+        onPress={() => handleOnPress(item)}
+      >
+        <View style={styles.chatHeader}>
+          <Text style={styles.chatCreatedBy}>{chatRoomTitle}</Text>
+          <Text style={styles.chatTimestamp}>{toChatRoomListDate(lastMessageTimestamp)}</Text>
+        </View>
+        <Text style={styles.chatContent}>{lastMessage}</Text>
+      </TouchableOpacity>
+    )
+  };
+
+  return (
+    <DrawerContentScrollView 
+      {...props} 
+      contentContainerStyle={{ padding: 0 }}
+    >
+      {/* <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="搜尋聊天房間"
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+      </View> */}
+      <Text style={styles.title} onPress={() => navigation.navigate('index')}>ChatRoom</Text>
+      <FlatList
+        // data={filteredChatRoomList}
+        data={chatRoomList}
+        keyExtractor={(item) => item.chatRoomId}
+        renderItem={renderItem}
+        contentContainerStyle={styles.chatList}
+      />
+    </DrawerContentScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  searchContainer: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+  },
+  searchInput: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  title: {
+    fontSize: 16,
+    textAlign: 'left',
+    fontWeight: 'bold',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  chatList: {
+    padding: 0,
+  },
+  chatContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    height: 66,
+  },
+  chatHeader: {
+    flexDirection: "row",
+    marginBottom: 5,
+    verticalAlign: 'middle',
+    justifyContent: 'space-between',
+  },
+  chatCreatedBy: {
+    fontSize: 16,
+  },
+  chatTimestamp: { 
+    fontSize: 12, 
+    color: '#a0aeaf',
+    marginLeft: 10,
+  },
+  chatContent: { 
+    fontSize: 14, 
+    color: "#333333",
+    paddingVertical: 3,
+  },
+  isActive: {
+    backgroundColor: '#eee',
+  }
+});
+
+export default DrawerContent;
