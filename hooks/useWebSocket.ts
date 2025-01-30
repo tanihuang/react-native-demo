@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { Default } from '@/constants/Default';
+import Default from '@/constants/Default';
 
 const useWebSocket = () => {
   const ws = useRef<Socket | null>(null);
 
   useEffect(() => {
-    ws.current = io(`${Default.api2}/chatroom`, {
+    ws.current = io(Default.chatRoom, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 3,

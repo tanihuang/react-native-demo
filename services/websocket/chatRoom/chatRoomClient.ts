@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { Default, Dev, Prod } from '@/constants/Default';
+import Default from '@/constants/Default';
 
 class ChatRoomClient {
   private socket: Socket | null = null;
@@ -10,7 +10,7 @@ class ChatRoomClient {
       return;
     }
 
-    this.socket = io(Dev.chatRoom, {
+    this.socket = io(Default.chatRoom, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 3,

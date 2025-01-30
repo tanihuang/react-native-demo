@@ -20,8 +20,7 @@ import useChatRoom from '@/services/websocket/chatRoom/useChatRoom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSearchVisible, setSearchItem, setSearchResult, clearSearch } from '@/store/chatRoomSlice';
 import { useHeaderHeight } from '@react-navigation/elements';
-
-import { Default } from '@/constants/Default';
+import Default from '@/constants/Default';
 
 export default function ChatRoomSearch() {
   const user = useSelector((state: any) => state.user);

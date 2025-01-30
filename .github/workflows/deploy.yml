@@ -1,0 +1,58 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js and Cache Dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Restore Cached Global Yarn Packages
+        id: yarn-cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.yarn
+          key: yarn-global-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-global-${{ runner.os }}-
+
+      - name: Check if Expo CLI is Installed
+        run: |
+          if ! command -v expo &> /dev/null
+          then
+            echo "Expo CLI not found, installing..."
+            yarn global add expo-cli
+          else
+            echo "Expo CLI is already installed."
+          fi
+
+      - name: Install dependencies (cached)
+        run: yarn install --frozen-lockfile
+
+      - name: Upgrade React Native for Expo SDK 52
+        run: yarn add react-native@0.76.6
+
+      - name: Set Production Environment
+        run: echo "NODE_ENV=production" >> $GITHUB_ENV
+
+      - name: Build Expo Web project
+        run: npx expo export --platform web --output-dir dist
+
+      - name: Deploy to GitHub Pages
+        run: |
+          yarn global add gh-pages
+          gh-pages -d dist -b gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

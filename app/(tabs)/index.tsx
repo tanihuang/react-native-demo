@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { setUser, clearUser } from '@/store/authSlice';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
+import Default from '@/constants/Default';
 
 const initForm = {
   username: '',
@@ -35,7 +36,7 @@ export default function TabLogin() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://ec2-18-181-213-113.ap-northeast-1.compute.amazonaws.com/api/auth/signin', {
+      const response = await axios.post(Default.signin, {
         username: form.username,
         password: form.password,
       });
@@ -54,7 +55,7 @@ export default function TabLogin() {
 
   const handleSignUp = async () => {
     try {
-      const response = await axios.post('http://ec2-18-181-213-113.ap-northeast-1.compute.amazonaws.com/api/auth/signup', {
+      const response = await axios.post(Default.signup, {
         username: form.username,
         password: form.password,
       });
