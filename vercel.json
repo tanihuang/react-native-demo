@@ -1,8 +1,9 @@
 {
   "rewrites": [
     {
-      "source": "/:path*",
-      "destination": "http://ec2-54-168-90-93.ap-northeast-1.compute.amazonaws.com/:path*"
+      "source": "/api/(.*)",
+      "destination": "http://ec2-54-168-90-93.ap-northeast-1.compute.amazonaws.com/:path*",
+      "methods": ["GET", "POST", "PUT", "DELETE"]
     }
   ]
 }
