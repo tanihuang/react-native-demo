@@ -10,49 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Setup Node.js and Cache Dependencies
+      
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: 'yarn'
 
-      - name: Restore Cached Global Yarn Packages
-        id: yarn-cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.yarn
-          key: yarn-global-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            yarn-global-${{ runner.os }}-
-
-      - name: Check if Expo CLI is Installed
-        run: |
-          if ! command -v expo &> /dev/null
-          then
-            echo "Expo CLI not found, installing..."
-            yarn global add expo-cli
-          else
-            echo "Expo CLI is already installed."
-          fi
-
-      - name: Install dependencies (cached)
+      - name: Install dependencies
         run: yarn install --frozen-lockfile
-
-      - name: Upgrade React Native for Expo SDK 52
-        run: yarn add react-native@0.76.6
-
+      
+      # 關鍵步驟：在這裡設定 NODE_ENV=production
       - name: Set Production Environment
         run: echo "NODE_ENV=production" >> $GITHUB_ENV
 
-      - name: Build Expo Web project
-        run: npx expo export --platform web --output-dir dist
+      - name: Build web
+        run: yarn build:web
+        # => expo export --platform web --output-dir web-build
+        # Expo 預設會依照 process.env.NODE_ENV 來做部分優化
 
       - name: Deploy to GitHub Pages
-        run: |
-          yarn global add gh-pages
-          gh-pages -d dist -b gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web-build
+          publish_branch: gh-pages
