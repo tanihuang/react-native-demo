@@ -13,9 +13,9 @@
 
 // export default Default;
 
-const BASE_URL_PROD = 'http://ec2-54-168-90-93.ap-northeast-1.compute.amazonaws.com/api';
+const BASE_URL_PROD = 'https://react-native-demo-git-main-tanihuang-project.vercel.app/api';
 const BASE_URL_DEV = 'http://localhost:3000';
-const BASE_URL_SOCKET = 'http://ec2-54-168-90-93.ap-northeast-1.compute.amazonaws.com';
+const BASE_URL_SOCKET = 'https://react-native-demo-git-main-tanihuang-project.vercel.app';
 
 const BASE_URL = process.env.NODE_ENV === 'production' ? BASE_URL_PROD : BASE_URL_DEV;
 
