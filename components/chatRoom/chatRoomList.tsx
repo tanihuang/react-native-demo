@@ -25,62 +25,60 @@ export default function ChatRoomList(props: any) {
   }
 
   return (
-    <NavigationContainer ref={navigationRef}>
-      <View style={styles.container}>
-        <Drawer.Navigator
-          initialRouteName={chatRoom.chatRoomId|| chatRoomList[0].chatRoomId}
-          screenOptions={{
-            drawerPosition: 'left',
-            drawerType: isWeb ? 'permanent' : 'slide', 
-            headerShown: false,
-            drawerStyle: {
-              width: 250,
-              padding: 0,
-            },
-            headerStyle: {
-              backgroundColor: '#f4511e',
-            },
-            headerTintColor: '#fff',
-            drawerActiveTintColor: 'red',
-            drawerActiveBackgroundColor: 'red',
-          }}
-          drawerContent={(props) => (
-            <DrawerContent 
-              {...props}
-              user={user}
-              chatRoomList={chatRoomList} 
-              chatRoom={chatRoom}
-            />
-          )}
-        >
-          {chatRoomList.map((item: any, index: number) => (
-            <Drawer.Screen
-              key={item.chatRoomId}
-              name={item.chatRoomId}
-              component={() => (
-                <ChatRoomScreen 
-                  {...item}
-                  user={user}
-                  chat={chat[item.chatRoomId] || []}
-                  handleCreateChat={handleCreateChat}
-                />
-              )}
-              // options={({ route }: any) => {
-              //   return {
-              //     title: item.chatRoomName,
-              //   };
-              // }}
-              // initialParams={item}
-              listeners={{
-                focus: () => {
-                  handleTabChange(item);
-                },
-              }}
-            />
-          ))}
-        </Drawer.Navigator>
-      </View>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <Drawer.Navigator
+        initialRouteName={chatRoom.chatRoomId|| chatRoomList[0].chatRoomId}
+        screenOptions={{
+          drawerPosition: 'left',
+          drawerType: isWeb ? 'permanent' : 'slide', 
+          headerShown: false,
+          drawerStyle: {
+            width: 250,
+            padding: 0,
+          },
+          headerStyle: {
+            backgroundColor: '#f4511e',
+          },
+          headerTintColor: '#fff',
+          drawerActiveTintColor: 'red',
+          drawerActiveBackgroundColor: 'red',
+        }}
+        drawerContent={(props) => (
+          <DrawerContent 
+            {...props}
+            user={user}
+            chatRoomList={chatRoomList} 
+            chatRoom={chatRoom}
+          />
+        )}
+      >
+        {chatRoomList.map((item: any, index: number) => (
+          <Drawer.Screen
+            key={item.chatRoomId}
+            name={item.chatRoomId}
+            component={() => (
+              <ChatRoomScreen 
+                {...item}
+                user={user}
+                chat={chat[item.chatRoomId] || []}
+                handleCreateChat={handleCreateChat}
+              />
+            )}
+            // options={({ route }: any) => {
+            //   return {
+            //     title: item.chatRoomName,
+            //   };
+            // }}
+            // initialParams={item}
+            listeners={{
+              focus: () => {
+                handleTabChange(item);
+              },
+            }}
+          />
+        ))}
+      </Drawer.Navigator>
+    </View>
   );
 }
 

@@ -49,8 +49,7 @@ export default function ChatRoom(props: any) {
   }, [isConnected, user]);
 
   useEffect(() => {
-    console.log('chatRoomList: ', chatRoomList);
-    if (!chatRoom && chatRoomList && chatRoomList.length) {
+    if (!chatRoom.chatRoomId && chatRoomList && chatRoomList.length) {
       handleTabChange(chatRoomList[0]);
     }
     if (updateChatRoomList) {
@@ -106,7 +105,6 @@ export default function ChatRoom(props: any) {
         chatRoomList={chatRoomList}
         handleTabChange={handleTabChange}
         handleCreateChat={handleCreateChat}
-        navigationRef={navigationRef}
       />
     </>
   );
