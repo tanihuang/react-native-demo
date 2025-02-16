@@ -18,8 +18,8 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
   const router = useRouter();
-  // @ts-ignore
   const searchVisible = store.getState().chatroom.searchVisible;
+
 
   // useEffect(() => {
   //   if (loaded) {
@@ -30,7 +30,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
-      router.replace('/');
+      router.replace('/(tabs)');
     }
   }, [fontsLoaded]);
 
@@ -38,14 +38,9 @@ export default function RootLayout() {
     return null;
   }
 
-  useEffect(() => {
-    console.log('searchVisible', searchVisible);
-  }, [searchVisible]);
-
   const handleFeedback = (e: any) => {
     const target = e.target;
-    const searchVisible = store.getState().chatroom.searchVisible;
-  
+
     const isInteractive = [
       'input',
       'textarea',
