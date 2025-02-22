@@ -24,15 +24,18 @@ export default function ChatRoom(props: any) {
       }
     },
     getChat: (data) => {
-      setChat((prev) => ({
+      setChat((prev: any) => ({
         ...prev,
         [chatRoom.chatRoomId]: toChatRoomScreenDate(data),
       }));
     },
     updateChatRoomList: (data) => {
       const { chatRoomId } = data;
-      setChatRoomList((prev) => [...prev, data]);
+      setChatRoomList((prev: any) => [...prev, data]);
       setUpdateChatRoomList(chatRoomId);
+    },
+    updateChat: (data) => {
+      handleCreateChat(data);
     },
     getError: (error) => {
       console.error('getError:', error);
