@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, StyleSheet, SafeAreaView, Dimensions, Platform } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import ChatRoomList from './chatRoomList';
@@ -43,13 +43,12 @@ export default function ChatRoom(props: any) {
   });
 
   useEffect(() => {
-    const initialRequestParam = async () => {
-      if (user.isLoggedIn) {
-        await getChatRoom(user.uuid);
-      }
-    };
-    initialRequestParam();
-  }, [isConnected, user]);
+    if (user.isLoggedIn) {
+      getChatRoom(user.uuid);
+    } else {
+      resetChatData();
+    }
+  }, [isConnected, user.isLoggedIn]);
 
   useEffect(() => {
     if (!chatRoom.chatRoomId && chatRoomList && chatRoomList.length) {
@@ -59,6 +58,12 @@ export default function ChatRoom(props: any) {
       handleUpdateChatRoomList(updateChatRoomList);
     }
   }, [chatRoomList]);
+
+  const resetChatData = useCallback(() => {
+    setChatRoomList([]);
+    setChatRoom({ chatRoomId: undefined });
+    setChat([]);
+  }, []);
 
   const handleTabChange = async (params: any) => {
     setChatRoom(params);

@@ -13,7 +13,8 @@ const DrawerContent = (props: any) => {
   // );
 
   const handleOnPress = (item: any) => {
-    navigation.navigate(item.chatRoomId, { chatRoomName: item.chatRoomName });
+    navigation.navigate(item.chatRoomId);
+    // navigation.navigate(item.chatRoomId, { chatRoomName: item.chatRoomName });
   };
 
   const renderItem = ({ item }: any) => {

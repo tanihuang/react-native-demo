@@ -15,12 +15,12 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import store from '@/store/index';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { FontAwesome } from '@expo/vector-icons';
 import useChatRoom from '@/services/websocket/chatRoom/useChatRoom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSearchVisible, setSearchItem, setSearchResult, clearSearch } from '@/store/chatRoomSlice';
 import { useHeaderHeight } from '@react-navigation/elements';
-import Default from '@/constants/Default';
+import Default from '@/services/api';
 
 export default function ChatRoomSearch() {
   const user = useSelector((state: any) => state.user);
@@ -71,7 +71,7 @@ export default function ChatRoomSearch() {
 
   return(
     <View style={styles.container}>
-      <Icon name="search" size={12} color="#888" style={styles.icon} />
+      <FontAwesome name="search" size={12} color="#888" style={styles.icon} />
       <TextInput
         value={search}
         placeholder='Search'

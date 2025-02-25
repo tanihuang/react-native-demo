@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import Default from '@/constants/Default';
+import Default from '@/services/api';
 
 class ChatRoomClient {
   private socket: Socket | null = null;

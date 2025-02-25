@@ -27,7 +27,7 @@ export default function ChatRoomList(props: any) {
   return (
     <View style={styles.container}>
       <Drawer.Navigator
-        initialRouteName={chatRoom.chatRoomId|| chatRoomList[0].chatRoomId}
+        initialRouteName={chatRoom.chatRoomId|| chatRoomList[0].chatRoomId || 'chatRoom'}
         screenOptions={{
           drawerPosition: 'left',
           drawerType: isWeb ? 'permanent' : 'slide', 
