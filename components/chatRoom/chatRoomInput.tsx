@@ -15,7 +15,7 @@ import useChatRoom from '@/services/websocket/chatRoom/useChatRoom';
 import { Feather } from '@expo/vector-icons';
 
 export default function ChatRoomInput(props: any) {
-  const { user, chatRoomId, handleCreateChat } = props;
+  const { user, chatRoomId } = props;
   const [form, setForm] = useState({
     content: undefined,
   });
@@ -44,7 +44,6 @@ export default function ChatRoomInput(props: any) {
       timestamp: Date.now(),
     }
 
-    handleCreateChat(params);
     await createChat(params);
     setForm((prev: any) => ({ ...prev, content: '' }));
   };

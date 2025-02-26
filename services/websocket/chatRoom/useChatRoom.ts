@@ -6,7 +6,7 @@ import { updateMembersThunk } from '@/store/chatRoomThunk';
 const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) => {
   const [isConnected, setIsConnected] = useState(false);
   const user = useSelector((state: any) => state.user);
-  const { searchResult, members } = useSelector((state: any) => state.chatroom);
+  const { searchList, members } = useSelector((state: any) => state.chatroom);
   const dispatch = useDispatch() as any;
 
   useEffect(() => {
@@ -33,7 +33,6 @@ const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) =>
   }, [eventHandlers]);
 
   const createChatRoom = async (params: any[], groupType: number) => {
-    console.log('params', params);
     const updateMembers = await dispatch(
       updateMembersThunk({ member: params, groupType })
     ).unwrap();
@@ -52,8 +51,12 @@ const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) =>
     ChatRoomClient.emit('createChatRoom', newChatRoom);
   };
 
-  const getChatRoom = (params: any) => {
-    ChatRoomClient.emit('getChatRoom', params);
+  const getChatRoomList = (params: any) => {
+    ChatRoomClient.emit('getChatRoomList', params);
+  };
+
+  const updateChatRoomList = (params: any) => {
+    ChatRoomClient.emit('updateChatRoomList', params);
   };
 
   const createChat = (params: any) => {
@@ -65,12 +68,18 @@ const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) =>
     ChatRoomClient.emit('getChat', params);
   };
 
+  const updateChatList = (params: any) => {
+    ChatRoomClient.emit('updateChatList', params);
+  };
+
   return {
     isConnected,
     createChatRoom,
-    getChatRoom,
+    getChatRoomList,
+    updateChatRoomList,
     createChat,
     getChat,
+    updateChatList,
   };
 };
 
