@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import Default from '@/constants/Default';
+import Default from '@/services/api';
 
 class ChatRoomClient {
   private socket: Socket | null = null;
@@ -13,7 +13,7 @@ class ChatRoomClient {
     this.socket = io(Default.chatRoom, {
       transports: ['websocket'],
       reconnection: true,
-      reconnectionAttempts: 3,
+      reconnectionAttempts: Infinity,
       timeout: 10000,
     });
 
@@ -24,11 +24,35 @@ class ChatRoomClient {
     this.socket.on('disconnect', (reason) => {
       console.warn('ChatRoom WebSocket disconnected:', reason);
       this.socket = null;
+      this.reconnect();
     });
 
     this.socket.on('connect_error', (error) => {
       console.error('ChatRoom WebSocket connection error:', error);
+      this.reconnect();
     });
+
+    window.addEventListener('online', this.reconnect.bind(this));
+  }
+
+  connected(): boolean {
+    return !!this.socket?.connected;
+  }
+
+  disconnect() {
+    if (this.socket) {
+      this.socket.disconnect();
+      this.socket = null;
+      console.log('ChatRoom WebSocket disconnected');
+    }
+  }
+
+  reconnect() {
+    setTimeout(() => {
+      if (!this.socket || !this.socket.connected) {
+        this.connect();
+      }
+    }, 5000);
   }
 
   emit(event: string, data: any) {
@@ -45,18 +69,6 @@ class ChatRoomClient {
 
   off(event: string, handler: (data: any) => void) {
     this.socket?.off(event, handler);
-  }
-
-  disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
-      console.log('ChatRoom WebSocket disconnected');
-    }
-  }
-
-  isConnected(): boolean {
-    return !!this.socket?.connected;
   }
 }
 

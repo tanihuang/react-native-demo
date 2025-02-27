@@ -7,7 +7,6 @@ import { useRouter } from 'expo-router';
 export function Header({ navigation }: any) {
   const user = useSelector((state: any) => state.user);
   const router = useRouter();
-  console.log('navigation', navigation);
   return (
     <View style={styles.container}>
       <Text style={styles.title} onPress={() => router.push('/')}>ChatRoom</Text>

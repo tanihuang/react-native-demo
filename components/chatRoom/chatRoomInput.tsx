@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 import { 
   StyleSheet,
   Image,
@@ -12,10 +12,10 @@ import {
   Alert,
 } from 'react-native';
 import useChatRoom from '@/services/websocket/chatRoom/useChatRoom';
-import Icon from 'react-native-vector-icons/Feather';
+import { Feather } from '@expo/vector-icons';
 
 export default function ChatRoomInput(props: any) {
-  const { user, chatRoomId, handleCreateChat } = props;
+  const { user, chatRoomId } = props;
   const [form, setForm] = useState({
     content: undefined,
   });
@@ -44,7 +44,6 @@ export default function ChatRoomInput(props: any) {
       timestamp: Date.now(),
     }
 
-    handleCreateChat(params);
     await createChat(params);
     setForm((prev: any) => ({ ...prev, content: '' }));
   };
@@ -63,8 +62,19 @@ export default function ChatRoomInput(props: any) {
         multiline={true}
         numberOfLines={3}
         clearButtonMode='always'
-        textAlignVertical="top"
-        blurOnSubmit={false}
+        textAlignVertical='top'
+        returnKeyType='send'
+        submitBehavior='submit'
+        onSubmitEditing={() => Platform.OS !== 'web' && handleSubmit()}
+        onKeyPress={(event) => {
+          if (Platform.OS === 'web') {
+            const keyEvent = event.nativeEvent as unknown as KeyboardEvent;
+            if (keyEvent.key === 'Enter' && !keyEvent.shiftKey) {
+              event.preventDefault();
+              handleSubmit();
+            }
+          }
+        }}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
@@ -73,8 +83,7 @@ export default function ChatRoomInput(props: any) {
           style={styles.buttonSubmit}
           onPress={() => handleSubmit()}
         >
-          <Icon name="send" size={20} color="black" />
-          {/* <Text style={styles.buttonSubmitText}>Submit</Text> */}
+          <Feather name='send' size={20} color='black' />
         </Pressable>
       </View>
     </View>
@@ -91,7 +100,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
-    shadowOpacity: 0,
+    boxShadow: '0 0 0 rgba(0, 0, 0, 0)',
   },
   buttomContainer: {
     position: 'absolute',

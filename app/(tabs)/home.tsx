@@ -74,8 +74,6 @@ export default function TabHome() {
       );
       const json = await response.json();
       setMenuList(json.menu);
-      console.log('json', json);
-      console.log('menuList', menuList);
     } catch {
       // eslint-disable-next-line no-empty
     }

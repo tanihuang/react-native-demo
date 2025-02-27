@@ -1,15 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, TextInput, Pressable, Text, View } from 'react-native';
+import { StyleSheet, Image, Platform, TextInput, Pressable, Text, View, Alert } from 'react-native';
 import io, { Socket } from 'socket.io-client';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { useDispatch } from 'react-redux';
 import { setUser, clearUser } from '@/store/authSlice';
+import { clearSearch } from '@/store/chatRoomSlice';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
-import Default from '@/constants/Default';
+import Default from '@/services/api';
+import { showAlert } from '@/components/dialog/AlertDialog';
 
 const initForm = {
   username: '',
@@ -36,21 +38,26 @@ export default function TabLogin() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post(Default.signin, {
+      const { data } = await axios.post(Default.signin, {
         username: form.username,
         password: form.password,
       });
-
-      if (response.data.user) {
-        dispatch(setUser(response.data.user));
+      if (data.user) {
+        dispatch(setUser(data.user));
+        showAlert('Login successful!');
+      } else if (data.message) {
+        showAlert(data.message || '');
       }
-    } catch (error) {
-      console.error('Error logging in:', error);
+    } catch (error: any) {
+      showAlert('error', error.message);
     }
   };
 
   const handleLogout = () => {
     dispatch(clearUser());
+    dispatch(clearSearch());
+    setForm(initForm);
+    showAlert('Logout successful!');
   };
 
   const handleSignUp = async () => {
@@ -61,8 +68,8 @@ export default function TabLogin() {
       });
 
       if (response.data.user) {
-        console.log('User data:', response.data.user);
         dispatch(setUser(response.data.user));
+        showAlert('Registered successful!');
       }
     } catch (error) {
       console.error('Error logging in:', error);

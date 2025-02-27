@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
-import Default from '@/constants/Default';
+import Default from '@/services/api';
 
 const useWebSocket = () => {
   const ws = useRef<Socket | null>(null);

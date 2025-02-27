@@ -1,24 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { View, Text, StyleSheet, SafeAreaView, Dimensions, Platform } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import ChatRoomScreen from './chatRoomScreen';
 import DrawerContent from "./drawerContent";
-import { navigationRef } from "@/constants/Ref";
+import { useSelector, useDispatch  } from 'react-redux';
+import { navigationRef } from '@/constants/Ref';
 
 const { width } = Dimensions.get('window');
 const Drawer = createDrawerNavigator();
 const isWeb = Platform.OS === 'web';
 
-export default function ChatRoomList(props: any) {
-  const {
-    user,
-    chatRoomList,
-    chat,
-    chatRoom,
-    handleTabChange,
-    handleCreateChat,
-  } = props;
+const ChatRoomList = forwardRef((props: any, ref) => {
+  const { user, handleTabChange } = props;
+  const { chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatroom);
+  const drawerContentRef = useRef<any>(null);
+
+  useImperativeHandle(ref, () => ({
+    handleOnPress: (chatRoomId: string) => {
+      drawerContentRef.current?.handleOnPress(chatRoomId);
+    },
+  }));
 
   if (!chatRoomList || !chatRoomList.length) {
     return null;
@@ -27,7 +29,7 @@ export default function ChatRoomList(props: any) {
   return (
     <View style={styles.container}>
       <Drawer.Navigator
-        initialRouteName={chatRoom.chatRoomId|| chatRoomList[0].chatRoomId}
+        initialRouteName={chatRoomItem.chatRoomId|| chatRoomList[0].chatRoomId || 'chatRoom'}
         screenOptions={{
           drawerPosition: 'left',
           drawerType: isWeb ? 'permanent' : 'slide', 
@@ -46,9 +48,10 @@ export default function ChatRoomList(props: any) {
         drawerContent={(props) => (
           <DrawerContent 
             {...props}
+            ref={drawerContentRef}
             user={user}
             chatRoomList={chatRoomList} 
-            chatRoom={chatRoom}
+            chatRoom={chatRoomItem}
           />
         )}
       >
@@ -60,8 +63,7 @@ export default function ChatRoomList(props: any) {
               <ChatRoomScreen 
                 {...item}
                 user={user}
-                chat={chat[item.chatRoomId] || []}
-                handleCreateChat={handleCreateChat}
+                chat={chatList[item.chatRoomId] || []}
               />
             )}
             // options={({ route }: any) => {
@@ -80,7 +82,9 @@ export default function ChatRoomList(props: any) {
       </Drawer.Navigator>
     </View>
   );
-}
+});
+
+export default ChatRoomList;
 
 const styles = StyleSheet.create({
   container: { 

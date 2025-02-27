@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { toChatRoomName, toChatRoomListDate } from '@/utils/utils';
 
-const DrawerContent = (props: any) => {
+const DrawerContent = forwardRef((props: any, ref) => {
   const { navigation, chatRoomList, chatRoom, user } = props;
   const [searchText, setSearchText] = useState('');
 
@@ -12,8 +12,13 @@ const DrawerContent = (props: any) => {
   //   item.chatRoomName.toLowerCase().includes(searchText.toLowerCase())
   // );
 
-  const handleOnPress = (item: any) => {
-    navigation.navigate(item.chatRoomId, { chatRoomName: item.chatRoomName });
+  useImperativeHandle(ref, () => ({
+    handleOnPress,
+  }));
+
+  const handleOnPress = (chatRoomId: string) => {
+    navigation.navigate(chatRoomId);
+    // navigation.navigate(item.chatRoomId, { chatRoomName: item.chatRoomName });
   };
 
   const renderItem = ({ item }: any) => {
@@ -23,7 +28,7 @@ const DrawerContent = (props: any) => {
     return (
       <TouchableOpacity
         style={[styles.chatContainer, isActive && styles.isActive]}
-        onPress={() => handleOnPress(item)}
+        onPress={() => handleOnPress(item.chatRoomId)}
       >
         <View style={styles.chatHeader}>
           <Text style={styles.chatCreatedBy}>{chatRoomTitle}</Text>
@@ -57,7 +62,9 @@ const DrawerContent = (props: any) => {
       />
     </DrawerContentScrollView>
   );
-};
+});
+
+export default DrawerContent;
 
 const styles = StyleSheet.create({
   searchContainer: {
@@ -110,5 +117,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
   }
 });
-
-export default DrawerContent;

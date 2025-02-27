@@ -15,21 +15,18 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import store from '@/store/index';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { FontAwesome } from '@expo/vector-icons';
 import useChatRoom from '@/services/websocket/chatRoom/useChatRoom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSearchVisible, setSearchItem, setSearchResult, clearSearch } from '@/store/chatRoomSlice';
+import { setSearchVisible, setSearchItem, setSearchList, clearSearch } from '@/store/chatRoomSlice';
 import { useHeaderHeight } from '@react-navigation/elements';
-import Default from '@/constants/Default';
+import Default from '@/services/api';
 
 export default function ChatRoomSearch() {
   const user = useSelector((state: any) => state.user);
-  const { searchVisible, searchResult } = useSelector((state: any) => state.chatroom);
+  const { searchVisible, searchList } = useSelector((state: any) => state.chatroom);
   const [search, setSearch] = useState('');
   const { createChatRoom } = useChatRoom({});
-
-  const textInputRef = useRef(null);
-  const flatListRef = useRef(null);
 
   const dispatch = useDispatch();
   const headerHeight = useHeaderHeight();
@@ -42,7 +39,7 @@ export default function ChatRoomSearch() {
     }
     try {
       const response: any = await axios.get(`${Default.userByUsername({ value1: value })}`);
-      dispatch(setSearchResult({ data: response.data, user }));
+      dispatch(setSearchList({ data: response.data, user }));
       dispatch(setSearchVisible(true));
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -71,7 +68,7 @@ export default function ChatRoomSearch() {
 
   return(
     <View style={styles.container}>
-      <Icon name="search" size={12} color="#888" style={styles.icon} />
+      <FontAwesome name="search" size={12} color="#888" style={styles.icon} />
       <TextInput
         value={search}
         placeholder='Search'
@@ -83,9 +80,9 @@ export default function ChatRoomSearch() {
         style={styles.textInput}
         placeholderTextColor='#888'
       />
-      {searchVisible && searchResult && searchResult.length > 0 && (
+      {searchVisible && searchList && searchList.length > 0 && (
         <FlatList
-          data={searchResult}
+          data={searchList}
           keyExtractor={(item, index) => index.toString()}
           renderItem={renderFlatListItem}
           style={styles.flatListContainer}

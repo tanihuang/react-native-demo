@@ -9,40 +9,6 @@ export const toRemoveUser = (data: any[], user: any) => {
   }
 };
 
-export const toChatRoomScreenDate = (data: any[]) => {
-  return data.reduce((result: { title: string; data: any[] }[], item: any) => {
-    const itemDate = moment(item.timestamp);
-    const today = moment().startOf("day");
-    const yesterday = moment().subtract(1, "day").startOf("day");
-    const startOfWeek = moment().startOf("week");
-
-    let title;
-
-    switch (true) {
-      case itemDate.isSame(today, "day"):
-        title = "Today";
-        break;
-      case itemDate.isSame(yesterday, "day"):
-        title = "Yesterday";
-        break;
-      case itemDate.isAfter(startOfWeek):
-        title = itemDate.format("dddd");
-        break;
-      default:
-        title = itemDate.format("MMMM D, YYYY");
-    }
-
-    let section = result.find((s) => s.title === title);
-    if (!section) {
-      section = { title, data: [] };
-      result.push(section);
-    }
-    section.data.push(item);
-
-    return result;
-  }, []);
-};
-
 export const toChatRoomName = (
   members: any[],
   user: { uuid: string },
@@ -74,3 +40,17 @@ export const toChatRoomListDate = (timestamp: number): string => {
   // 3. 如果是過去年份
   return date.format('YYYY/MM/DD'); // 例如：2024/01/19
 }
+
+export const toChatRoomDate = (timestamp: number) => {
+  const itemDate = moment(timestamp);
+  const today = moment().startOf("day");
+  const yesterday = moment().subtract(1, "day").startOf("day");
+  const startOfWeek = moment().startOf("week");
+  const startOfYear = moment().startOf("year");
+
+  if (itemDate.isSame(today, "day")) return "Today";
+  if (itemDate.isSame(yesterday, "day")) return "Yesterday";
+  if (itemDate.isAfter(startOfWeek)) return itemDate.format("dddd"); // "Monday", "Tuesday", etc.
+  if (itemDate.isAfter(startOfYear)) return itemDate.format("MM/DD"); // "03/27"
+  return null;
+};

@@ -7,8 +7,9 @@ import 'react-native-reanimated';
 import { Provider, useSelector } from 'react-redux';
 import store from '@/store/index';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View, StyleSheet } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View, StyleSheet, Pressable } from 'react-native';
 import { clearSearch } from '@/store/chatRoomSlice';
+import AlertDialog from '@/components/dialog/AlertDialog';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,8 +60,9 @@ export default function RootLayout() {
 
   return (
     <Provider store={store}>
-      <TouchableWithoutFeedback
+      <Pressable
         onPress={(e) => handleFeedback(e)}
+        style={styles.pressable}
       >
         <View style={styles.container}>
           <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -69,8 +71,9 @@ export default function RootLayout() {
               <Stack.Screen name="+not-found" />
             </Stack>
           </ThemeProvider>
+          <AlertDialog />
         </View>
-      </TouchableWithoutFeedback>
+      </Pressable>
     </Provider>
     // <Provider store={store}>
     //   <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -84,6 +87,9 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
+  pressable: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },

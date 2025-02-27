@@ -17,14 +17,16 @@ export default function ChatRoomScreen(props: any) {
   }, [chat]);
 
   const renderFlatList = ({ item }: any) => {
-    const { data = [] } = item;
+    const { messages: data = [] } = item;
     return (
       <View style={styles.chatContainer}>
-        <View style={styles.lineContainer}>
-          <View style={styles.line} />
-          <Text style={styles.chatTitle}>{item.title}</Text>
-          <View style={styles.line} />
-        </View>
+        {item.title && (
+          <View style={styles.lineContainer}>
+            <View style={styles.line} />
+            <Text style={styles.chatTitle}>{item.title}</Text>
+            <View style={styles.line} />
+          </View>
+        )}
         {data.map((message: any, index: number) => {
           const isCurrentUser = message.user.uuid === user.uuid;
           return(

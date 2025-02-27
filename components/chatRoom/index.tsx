@@ -1,113 +1,78 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { View, Text, StyleSheet, SafeAreaView, Dimensions, Platform } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import ChatRoomList from './chatRoomList';
 import { useSelector, useDispatch  } from 'react-redux';
 import useChatRoom from '@/services/websocket/chatRoom/useChatRoom';
-import { toChatRoomScreenDate } from "@/utils/utils";
-import { navigationRef } from "@/constants/Ref";
+import { 
+  setChatRoomList, 
+  setUpdateChatRoomList, 
+  setChatRoomItem, 
+  setChatList, 
+  setUpdateChatList, 
+  clearChat,
+} from '@/store/chatRoomSlice';
 
 export default function ChatRoom(props: any) {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const [chatRoomList, setChatRoomList] = useState<any[]>([]);
-  const [chatRoom, setChatRoom] = useState<any>({
-    chatRoomId: undefined,
-  });
-  const [chat, setChat] = useState<any[]>([]);
-  const [updateChatRoomList, setUpdateChatRoomList] = useState<any>();
-
-  const { isConnected, getChatRoom, getChat } = useChatRoom({
-    getChatRoom: (data) => {
+  const { chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatroom);
+  const { connected, getChatRoomList, updateChatRoomList, getChat } = useChatRoom({
+    getChatRoomList: (data) => {
       if (data && data.length) {
-        setChatRoomList(data);
+        dispatch(setChatRoomList(data));
       }
     },
     getChat: (data) => {
-      setChat((prev: any) => ({
-        ...prev,
-        [chatRoom.chatRoomId]: toChatRoomScreenDate(data),
-      }));
+      dispatch(setChatList(data));
     },
     updateChatRoomList: (data) => {
-      const { chatRoomId } = data;
-      setChatRoomList((prev: any) => [...prev, data]);
-      setUpdateChatRoomList(chatRoomId);
+      dispatch(setUpdateChatRoomList(data));
+      handleTabChange(data);
     },
-    updateChat: (data) => {
-      handleCreateChat(data);
+    updateChatList: (data) => {
+      dispatch(setUpdateChatList(data));
+      dispatch(setUpdateChatRoomList(data));
     },
     getError: (error) => {
       console.error('getError:', error);
     },
   });
+  const chatRoomListRef = useRef<any>(null);
 
   useEffect(() => {
-    const initialRequestParam = async () => {
-      if (user.isLoggedIn) {
-        await getChatRoom(user.uuid);
-      }
-    };
-    initialRequestParam();
-  }, [isConnected, user]);
+    if (user.isLoggedIn) {
+      getChatRoomList(user.uuid);
+    } else {
+      dispatch(clearChat());
+    }
+  }, [connected, user.isLoggedIn]);
 
   useEffect(() => {
-    if (!chatRoom.chatRoomId && chatRoomList && chatRoomList.length) {
+    if (!chatRoomList.length) {
+      return;
+    }
+    if (!chatRoomItem.chatRoomId) {
       handleTabChange(chatRoomList[0]);
+      return;
     }
-    if (updateChatRoomList) {
-      handleUpdateChatRoomList(updateChatRoomList);
-    }
-  }, [chatRoomList]);
+    chatRoomListRef.current?.handleOnPress(chatRoomItem.chatRoomId);
+  }, [chatRoomList.length]);
 
   const handleTabChange = async (params: any) => {
-    setChatRoom(params);
+    dispatch(setChatRoomItem(params));
     getChat({ chatRoomId: params.chatRoomId });
-  };
-
-  const handleCreateChat = (params: any) => {
-    const { createdBy, content } = params;
-    setChat((prev) => ({
-      ...prev,
-      [chatRoom.chatRoomId]: [
-        ...prev[chatRoom.chatRoomId]?.filter((date: any) => date.title !== "Today") || [],
-        {
-          title: "Today",
-          data: [...(prev[chatRoom.chatRoomId]?.find((item: any) => item.title === "Today")?.data || []), params],
-        },
-      ],
-    }));
-
-    setChatRoomList((prev) =>
-      prev.map((item) =>
-        item.chatRoomId === chatRoom.chatRoomId
-          ? {
-              ...item,
-              lastMessageSender: createdBy,
-              lastMessage: content,
-              lastMessageTimestamp: Date.now(),
-            }
-          : item
-      )
-    );
-  };
-
-  const handleUpdateChatRoomList = async (params: any) => {
-    if (navigationRef.isReady()) {
-      navigationRef.navigate(params);
-    }
-    setUpdateChatRoomList(undefined);
   };
 
   return (
     <>
       <ChatRoomList
+        ref={chatRoomListRef}
         user={user}
-        chat={chat}
-        chatRoom={chatRoom}
+        chat={chatList}
+        chatRoom={chatRoomItem}
         chatRoomList={chatRoomList}
         handleTabChange={handleTabChange}
-        handleCreateChat={handleCreateChat}
       />
     </>
   );
