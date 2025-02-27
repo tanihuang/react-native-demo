@@ -1,24 +1,31 @@
 import { io, Socket } from 'socket.io-client';
 import Default from '@/services/api';
+import { useDispatch, useSelector } from 'react-redux';
 
 class ChatRoomClient {
   private socket: Socket | null = null;
+  private uuid: string | null = null;
 
-  connect() {
-    if (this.socket) {
+  connect(uuid: any) {
+    if (!uuid || this.socket) {
       console.warn('ChatRoom WebSocket already connected');
       return;
     }
+    this.uuid = uuid;
 
     this.socket = io(Default.chatRoom, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: Infinity,
       timeout: 10000,
+      query: { uuid },
     });
 
     this.socket.on('connect', () => {
       console.log('ChatRoom WebSocket connected');
+      setTimeout(() => {
+        console.log("📡 Your Socket ID:", this.socket.id);
+      }, 100);
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -50,9 +57,16 @@ class ChatRoomClient {
   reconnect() {
     setTimeout(() => {
       if (!this.socket || !this.socket.connected) {
-        this.connect();
+        this.connect(this.uuid);
       }
     }, 5000);
+  }
+
+  update(uuid: string | null) {
+    if (uuid !== this.socket?.io.opts.query?.uuid) {
+      this.disconnect();
+      this.connect(uuid);
+    }
   }
 
   emit(event: string, data: any) {

@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import Default from '@/services/api';
 import { showAlert } from '@/components/dialog/AlertDialog';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initForm = {
   username: '',
@@ -27,10 +28,14 @@ export default function TabLogin() {
   const router = useRouter();
 
   useEffect(() => {
-    if (user.isLoggedIn) {
-      router.push('/chatRoom');
+    const handleInitParam = async () => {
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        router.push('/chatRoom');
+      }
     }
-  }, [user.isLoggedIn, router]);
+    handleInitParam();
+  }, [router]);
 
   const handleInputChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));

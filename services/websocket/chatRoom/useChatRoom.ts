@@ -5,11 +5,15 @@ import { updateMembersThunk } from '@/store/chatRoomThunk';
 
 const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) => {
   const [connected, setConnected] = useState(false);
-  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch() as any;
+  const user = useSelector((state: any) => state.user);
 
   useEffect(() => {
-    ChatRoomClient.connect();
+    user.isLoggedIn ? ChatRoomClient.update(user.uuid) : ChatRoomClient.disconnect();
+  }, [user.isLoggedIn]);
+
+  useEffect(() => {
+    ChatRoomClient.connect(user.uuid);
 
     ChatRoomClient.on('connect', () => {
       setConnected(true);
