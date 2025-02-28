@@ -29,13 +29,13 @@ export default function TabLogin() {
 
   useEffect(() => {
     const handleInitParam = async () => {
-      const user = await AsyncStorage.getItem('user');
-      if (user) {
+      if (user && user.isLoggedIn) {
+        console.log('in');
         router.push('/chatRoom');
       }
     }
     handleInitParam();
-  }, [router]);
+  }, [user.isLoggedIn, router]);
 
   const handleInputChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -106,33 +106,23 @@ export default function TabLogin() {
           style={[styles.textInput, { marginTop: 10 }]}
           clearButtonMode='always'
         />
-
-        {!user.isLoggedIn ? (
-          <>
-            <Pressable
-              style={styles.submitButton}
-              onPress={() => {
-                setSubmit(true)
-                handleLogin();
-              }}
-            >
-              <Text style={styles.submitButtonText}>Login</Text>
-            </Pressable>
-            <Pressable
-              style={styles.submitButton}
-              onPress={handleSignUp}
-            >
-              <Text style={styles.submitButtonText}>Signup</Text>
-            </Pressable>
-          </>
-        ) : (
+        <>
           <Pressable
             style={styles.submitButton}
-            onPress={handleLogout}
+            onPress={() => {
+              setSubmit(true)
+              handleLogin();
+            }}
           >
-            <Text style={styles.submitButtonText}>Logout</Text>
+            <Text style={styles.submitButtonText}>Login</Text>
           </Pressable>
-        )}
+          <Pressable
+            style={styles.submitButton}
+            onPress={handleSignUp}
+          >
+            <Text style={styles.submitButtonText}>Signup</Text>
+          </Pressable>
+        </>
       </View>
     </View>
   );

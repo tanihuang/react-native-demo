@@ -21,13 +21,6 @@ class ChatRoomClient {
       query: { uuid },
     });
 
-    this.socket.on('connect', () => {
-      console.log('ChatRoom WebSocket connected');
-      setTimeout(() => {
-        console.log("📡 Your Socket ID:", this.socket.id);
-      }, 100);
-    });
-
     this.socket.on('disconnect', (reason) => {
       console.warn('ChatRoom WebSocket disconnected:', reason);
       this.socket = null;
