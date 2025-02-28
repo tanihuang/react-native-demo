@@ -21,7 +21,7 @@ const ChatRoomList = forwardRef((props: any, ref) => {
       drawerContentRef.current?.handleOnPress(chatRoomId);
     },
   }));
-
+  
   if (!chatRoomList || !chatRoomList.length) {
     return null;
   }

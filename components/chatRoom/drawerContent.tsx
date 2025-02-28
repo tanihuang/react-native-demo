@@ -1,20 +1,27 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, useMemo } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text, FlatList } from 'react-native';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { toChatRoomName, toChatRoomListDate } from '@/utils/utils';
 
 const DrawerContent = forwardRef((props: any, ref) => {
   const { navigation, chatRoomList, chatRoom, user } = props;
-  const [searchText, setSearchText] = useState('');
-
-  // 過濾聊天房間列表
-  // const filteredChatRoomList = chatRoomList.filter((item: any) =>
-  //   item.chatRoomName.toLowerCase().includes(searchText.toLowerCase())
-  // );
 
   useImperativeHandle(ref, () => ({
     handleOnPress,
   }));
+
+  // const filteredChatRoomList = chatRoomList.filter((item: any) =>
+  //   item.chatRoomName.toLowerCase().includes(searchText.toLowerCase())
+  // );
+
+  const renderFlatList = useMemo(() => {
+    return chatRoomList.map((item: any) => {
+      return {
+        ...item,
+        lastMessageTimestamp: toChatRoomListDate(item.lastMessageTimestamp),
+      };
+    });
+  }, [chatRoomList]);
 
   const handleOnPress = (chatRoomId: string) => {
     navigation.navigate(chatRoomId);
@@ -25,6 +32,7 @@ const DrawerContent = forwardRef((props: any, ref) => {
     const { members, chatRoomName, groupType, lastMessage, lastMessageTimestamp } = item;
     const chatRoomTitle = toChatRoomName(members, user, chatRoomName, groupType);
     const isActive = chatRoom.chatRoomId === item.chatRoomId;
+
     return (
       <TouchableOpacity
         style={[styles.chatContainer, isActive && styles.isActive]}
@@ -32,7 +40,7 @@ const DrawerContent = forwardRef((props: any, ref) => {
       >
         <View style={styles.chatHeader}>
           <Text style={styles.chatCreatedBy}>{chatRoomTitle}</Text>
-          <Text style={styles.chatTimestamp}>{toChatRoomListDate(lastMessageTimestamp)}</Text>
+          <Text style={styles.chatTimestamp}>{lastMessageTimestamp}</Text>
         </View>
         <Text style={styles.chatContent}>{lastMessage}</Text>
       </TouchableOpacity>
@@ -47,7 +55,7 @@ const DrawerContent = forwardRef((props: any, ref) => {
       {/* <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="搜尋聊天房間"
+          placeholder="Search"
           value={searchText}
           onChangeText={setSearchText}
         />
@@ -55,8 +63,8 @@ const DrawerContent = forwardRef((props: any, ref) => {
       <Text style={styles.title} onPress={() => navigation.navigate('index')}>ChatRoom</Text>
       <FlatList
         // data={filteredChatRoomList}
-        data={chatRoomList}
-        keyExtractor={(item) => item.chatRoomId}
+        data={renderFlatList}
+        keyExtractor={(item) => item.chatRoomId.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.chatList}
       />

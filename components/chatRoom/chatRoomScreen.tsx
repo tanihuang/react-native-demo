@@ -39,7 +39,13 @@ export default function ChatRoomScreen(props: any) {
             >
               <View style={styles.chatHeader}>
                 <Text style={styles.chatCreatedBy}>{message.user.username}</Text>
-                <Text style={styles.chatTimestamp}>{new Date(message.timestamp).toLocaleString()}</Text>
+                <Text style={styles.chatTimestamp}>
+                  {new Date(message.timestamp).toLocaleString(undefined, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}
+                </Text>
               </View>
               <Text style={styles.chatContent}>{message.content}</Text>
             </View>
@@ -59,7 +65,7 @@ export default function ChatRoomScreen(props: any) {
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderFlatList}
         contentContainerStyle={styles.flatList}
-        // inverted // 使最新消息显示在底部
+        // inverted
         showsVerticalScrollIndicator={true}
       />
       <ChatRoomInput {...props} />

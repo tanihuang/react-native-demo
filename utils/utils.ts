@@ -22,23 +22,23 @@ export const toChatRoomName = (
   return groupType === 0 ? (otherUserName || chatRoomName) : chatRoomName;
 };
 
-export const toChatRoomListDate = (timestamp: number): string => {
-  const now = moment(); // 當前時間
-  const date = moment(timestamp); // 傳入的時間戳
-  const todayStart = moment().startOf('day'); // 今日開始的時間戳
+export const toChatRoomListDate = (timestamp: any) => {
+  if (!timestamp) {
+    return null;
+  }
+  const now = moment();
+  const date = moment(timestamp);
+  const todayStart = moment().startOf('day');
 
-  // 1. 如果是今天
   if (date.isSame(todayStart, 'day')) {
-    return date.format('A h:mm'); // 例如：下午11:59
+    return date.format('A h:mm');
   }
 
-  // 2. 如果是今年（但不是今天）
   if (date.isSame(now, 'year')) {
-    return date.format('MM/DD'); // 例如：01/19
+    return date.format('MM/DD');
   }
 
-  // 3. 如果是過去年份
-  return date.format('YYYY/MM/DD'); // 例如：2024/01/19
+  return date.format('YYYY/MM/DD');
 }
 
 export const toChatRoomDate = (timestamp: number) => {
@@ -50,7 +50,7 @@ export const toChatRoomDate = (timestamp: number) => {
 
   if (itemDate.isSame(today, "day")) return "Today";
   if (itemDate.isSame(yesterday, "day")) return "Yesterday";
-  if (itemDate.isAfter(startOfWeek)) return itemDate.format("dddd"); // "Monday", "Tuesday", etc.
-  if (itemDate.isAfter(startOfYear)) return itemDate.format("MM/DD"); // "03/27"
+  if (itemDate.isAfter(startOfWeek)) return itemDate.format("dddd");
+  if (itemDate.isAfter(startOfYear)) return itemDate.format("MM/DD");
   return null;
 };

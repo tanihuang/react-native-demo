@@ -30,7 +30,6 @@ export default function TabLogin() {
   useEffect(() => {
     const handleInitParam = async () => {
       if (user && user.isLoggedIn) {
-        console.log('in');
         router.push('/chatRoom');
       }
     }
@@ -56,13 +55,6 @@ export default function TabLogin() {
     } catch (error: any) {
       showAlert('error', error.message);
     }
-  };
-
-  const handleLogout = () => {
-    dispatch(clearUser());
-    dispatch(clearSearch());
-    setForm(initForm);
-    showAlert('Logout successful!');
   };
 
   const handleSignUp = async () => {
