@@ -33,7 +33,7 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
       router.replace('/(tabs)');
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, router]);
 
   if (!fontsLoaded) {
     return null;
