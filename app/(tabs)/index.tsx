@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, TextInput, Pressable, Text, View, Alert } from 'react-native';
+import { StyleSheet, Image, Platform, TextInput, Pressable, Text, View, Alert, TouchableOpacity } from 'react-native';
 import io, { Socket } from 'socket.io-client';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const initForm = {
   username: '',
   password: '',
+  visible: false,
 };
 
 export default function TabLogin() {
@@ -40,6 +41,13 @@ export default function TabLogin() {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
+  const handleVisible = () => {
+    setForm((prev) => ({
+      ...prev,
+      visible: !prev.visible,
+    }));
+  };
+
   const handleLogin = async () => {
     try {
       const { data } = await axios.post(Default.signin, {
@@ -49,11 +57,12 @@ export default function TabLogin() {
       if (data.user) {
         dispatch(setUser(data.user));
         showAlert('Login successful!');
-      } else if (data.message) {
-        showAlert(data.message || '');
       }
     } catch (error: any) {
-      showAlert('error', error.message);
+      const message = Array.isArray(error.response?.data?.message)
+        ? error.response.data.message.join(' ')
+        : error.response?.data?.message;
+      showAlert('error', message);
     }
   };
 
@@ -63,13 +72,18 @@ export default function TabLogin() {
         username: form.username,
         password: form.password,
       });
-
-      if (response.data.user) {
-        dispatch(setUser(response.data.user));
+      if (response) {
         showAlert('Registered successful!');
       }
-    } catch (error) {
-      console.error('Error logging in:', error);
+      if (response.data) {
+        dispatch(setUser(response.data));
+        router.push('/chatRoom');
+      }
+    } catch (error: any) {
+      const message = Array.isArray(error.response?.data?.message)
+        ? error.response.data.message.join(' ')
+        : error.response?.data?.message;
+      showAlert('error', message);
     }
   };
 
@@ -90,14 +104,31 @@ export default function TabLogin() {
           style={styles.textInput}
           clearButtonMode='always'
         />
-        <TextInput
-          value={form.password}
-          onChangeText={(value) => handleInputChange('password', value)}
-          placeholder='password'
-          secureTextEntry={true}
-          style={[styles.textInput, { marginTop: 10 }]}
-          clearButtonMode='always'
-        />
+        <View style={{ position: 'relative' }}>
+          <TextInput
+            value={form.password}
+            onChangeText={(value) => handleInputChange('password', value)}
+            placeholder='password'
+            secureTextEntry={!form.visible}
+            style={[styles.textInput, { marginTop: 10 }]}
+            clearButtonMode='always'
+          />
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              right: 10,
+              top: '50%',
+              transform: [{ translateY: -4 }],
+            }}
+            onPress={handleVisible}
+          >
+            <Ionicons
+              name={form.visible ? 'eye' : 'eye-off'}
+              size={16}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
         <>
           <Pressable
             style={styles.submitButton}
