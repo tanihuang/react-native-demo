@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ChatRoomClient from '../chatRoomClient';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateMembersThunk } from '@/store/chatRoomThunk';
+import { updateMembersThunk } from '@/store/chatRoom/socket/chatRoomThunk';
 
 const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) => {
   const [connected, setConnected] = useState(false);
@@ -35,9 +35,9 @@ const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) =>
     };
   }, [eventHandlers]);
 
-  const createChatRoom = async (params: any[], groupType: number) => {
+  const createChatRoom = async (params: any[], group: number) => {
     const updateMembers = await dispatch(
-      updateMembersThunk({ member: params, groupType })
+      updateMembersThunk({ member: params, group })
     ).unwrap();
 
     const newMembers = updateMembers.some((item: any) => item.uuid === user.uuid)
@@ -48,7 +48,7 @@ const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) =>
       createdBy: user.uuid,
       chatRoomName: `${user.username}'s chatRoom`,
       members: newMembers,
-      groupType,
+      group,
     };
 
     ChatRoomClient.emit('createChatRoom', newChatRoom);
@@ -63,7 +63,6 @@ const useChatRoom = (eventHandlers: { [event: string]: (data: any) => void }) =>
   };
 
   const createChat = (params: any) => {
-    console.log('createChat', params);
     ChatRoomClient.emit('createChat', params);
   };
 

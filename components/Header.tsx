@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button, Pressable, FlatList, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import ChatRoomSearch from '@/components/chatRoom/chatRoomSearch';
+import ChatRoomSearch from '@/components/chatRoom/socket/chatRoomSearch';
 import { useRouter } from 'expo-router';
 import { useDispatch } from 'react-redux';
 import { setUser, clearUser } from '@/store/authSlice';
-import { clearSearch } from '@/store/chatRoomSlice';
+import { clearSearch } from '@/store/chatRoom/socket/chatRoomSlice';
 import { showAlert } from '@/components/dialog/AlertDialog';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { onValue, ref, remove } from 'firebase/database';
+import { db } from '@/services/firebaseConfig';
 
 export function Header({ navigation }: any) {
   const user = useSelector((state: any) => state.user);
@@ -17,29 +20,52 @@ export function Header({ navigation }: any) {
     dispatch(clearSearch());
     setDropdowVisible(false);
     showAlert('Logout successful!');
+
+    const privateRef = ref(db, 'chatRooms/private');
+    onValue(privateRef, (snapshot) => {
+      const data = snapshot.val() || {};
+
+      Object.entries(data).forEach(([roomId, room]: any) => {
+        const members = room.members || [];
+        const isInRoom = members.some((item: any) => item.uuid === user.uuid);
+        
+        if (isInRoom) {
+          remove(ref(db, `chatRooms/private/${roomId}`));
+          remove(ref(db, `messages/private/${roomId}`));
+        }
+      });
+    }, { onlyOnce: true });
+
+    remove(ref(db, `users/${user.uuid}`));
     router.push("/");
   };
-  const [dropdowVisiblen, setDropdowVisible] = useState(false);
+  const [dropdowVisible, setDropdowVisible] = useState(false);
 
   const renderFlatList: any[] = [ 
-    { id: 'Logout', label: 'Logout', action: handleLogout },
+    { id: 'Exit', label: 'Exit', action: handleLogout },
   ];
   return (
     <View style={styles.container}>
       <Text style={styles.title}>ChatRoom</Text>
       {/* <Text style={styles.title} onPress={() => router.push('/')}>ChatRoom</Text> */}
-      {user.isLoggedIn && (
+      {user.isLogged && (
         <>
-          <ChatRoomSearch/>
+          {user.role === 1 && <ChatRoomSearch />}
           <View style={styles.userContainer}>
             <TouchableOpacity 
-              onPress={() => setDropdowVisible(!dropdowVisiblen)}
+              onPress={() => setDropdowVisible(!dropdowVisible)}
               activeOpacity={1}
+              style={{ flexDirection: 'row', alignItems: 'center' }}
             >
               <Text style={styles.user}>{user.username}</Text>
+              <Ionicons
+                name={dropdowVisible ? 'caret-up' : 'caret-down'}
+                size={18}
+                style={{ marginLeft: 5 }}
+              />
             </TouchableOpacity>
             {/* <Text>{JSON.stringify(user)}</Text> */}
-            {dropdowVisiblen && (
+            {dropdowVisible && (
               <FlatList
                   data={renderFlatList}
                   keyExtractor={(item, index) => index.toString()}

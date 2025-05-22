@@ -12,7 +12,7 @@
     "android": "npx expo start --android",
     "ios": "npx expo start --ios",
     "web": "npx expo start --web",
-    "test": "jest --watchAll",
+    "test": "mocha --watchAll",
     "lint": "npx expo lint"
   },
   "jest": {
@@ -28,6 +28,7 @@
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.1.1",
     "@reduxjs/toolkit": "^2.3.0",
+    "@truffle/hdwallet-provider": "^2.1.15",
     "@types/moment": "^2.13.0",
     "antd": "^5.24.2",
     "axios": "^1.7.7",
@@ -40,7 +41,10 @@
     "expo-status-bar": "~2.0.1",
     "expo-system-ui": "~4.0.7",
     "expo-web-browser": "~14.0.2",
+    "firebase": "^11.7.1",
+    "ganache-cli": "^6.12.2",
     "lodash": "^4.17.21",
+    "mocha": "^11.1.0",
     "moment": "^2.30.1",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -58,13 +62,17 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
     "react-redux": "^9.1.2",
-    "socket.io-client": "^4.8.0"
+    "socket.io-client": "^4.8.0",
+    "solc": "^0.8.29",
+    "uuid": "^11.1.0",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.26.0",
     "@expo/webpack-config": "^19.0.1",
     "@types/jest": "^29.5.12",
+    "@types/lodash": "^4.17.16",
     "@types/react": "~18.3.12",
     "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^18.0.7",

@@ -20,26 +20,6 @@ export default function TabLayout() {
 
   const config = [
     {
-      name: 'home',
-      options: {
-        title: 'Home',
-        tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
-          <TabBarIcon name={focused ? 'home-outline' : 'home-outline'} color={color} />
-        ),
-        tabBarButton: () => null, 
-      },
-    },
-    {
-      name: 'explore',
-      options: {
-        title: 'Explore',
-        tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
-          <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-        ),
-        tabBarButton: () => null,
-      },
-    },
-    {
       name: 'index',
       options: {
         title: 'Login',
@@ -56,7 +36,7 @@ export default function TabLayout() {
         tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
           <TabBarIcon name={focused ? 'chatbubble-ellipses-outline' : 'chatbubble-ellipses-outline'} color={color} />
         ),
-        // tabBarButton: user.isLoggedIn ? undefined : () => null, 
+        // tabBarButton: user.isLogged ? undefined : () => null, 
         tabBarButton: () => null,
       },
     },
@@ -72,7 +52,7 @@ export default function TabLayout() {
         </Tab.Navigator>
       </NavigationContainer> */}
       <Tabs
-        initialRouteName={user.isLoggedIn ? 'chatRoom' : 'index'}
+        initialRouteName={user.isLogged ? 'chatRoom' : 'index'}
         screenOptions={{
           tabBarStyle: { display: 'none' },
           tabBarActiveTintColor: Colors['light'].tint,

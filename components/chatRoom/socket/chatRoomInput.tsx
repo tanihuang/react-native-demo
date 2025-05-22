@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import useChatRoomSocket from '@/services/websocket/chatRoom/socket/useChatRoom';
+import useChatRoom from '@/services/websocket/chatRoom/socket/useChatRoom';
 import { Feather } from '@expo/vector-icons';
 
 export default function ChatRoomInput(props: any) {
@@ -20,7 +20,7 @@ export default function ChatRoomInput(props: any) {
     content: undefined,
   });
   const [isFocused, setIsFocused] = useState(false);
-  const { createChat, getChat } = useChatRoomSocket({});
+  const { createChat, getChat } = useChatRoom({});
 
   const handleInputChange = async (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));

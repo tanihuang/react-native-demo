@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, SafeAreaView, Dimensions, Platform } from 'reac
 import { NavigationContainer } from "@react-navigation/native";
 import ChatRoomList from './chatRoomList';
 import { useSelector, useDispatch  } from 'react-redux';
-import useChatRoomSocket from '@/services/websocket/chatRoom/socket/useChatRoom';
+import useChatRoom from '@/services/websocket/chatRoom/socket/useChatRoom';
 import { 
   setChatRoomList, 
   setUpdateChatRoomList, 
@@ -11,13 +11,13 @@ import {
   setChatList, 
   setUpdateChatList, 
   clearChat,
-} from '@/store/chatRoomSlice';
+} from '@/store/chatRoom/socket/chatRoomSlice';
 
 export default function ChatRoom(props: any) {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const { chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatroom);
-  const { connected, getChatRoomList, updateChatRoomList, getChat } = useChatRoomSocket({
+  const { chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatRoomSocket);
+  const { connected, getChatRoomList, updateChatRoomList, getChat } = useChatRoom({
     getChatRoomList: (data) => {
       if (data && data.length) {
         dispatch(setChatRoomList(data));

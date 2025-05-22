@@ -3,7 +3,7 @@ import { toRemoveUser } from '@/utils/utils';
 import { toChatRoomDate } from "@/utils/utils";
 
 const chatRoomSlice = createSlice({
-  name: 'chatroom',
+  name: 'chatRoomSocke',
   initialState: {
     searchVisible: false,
     searchList: [] as { uuid: string; username: string }[],
@@ -38,13 +38,13 @@ const chatRoomSlice = createSlice({
     },
     setMemberList: (
       state, 
-      action: { payload: { member: any, groupType: number }}
+      action: { payload: { member: any, group: number }}
     ) => {
-      const { member, groupType } = action.payload;
+      const { member, group } = action.payload;
       if (!Array.isArray(state.members)) {
         state.members = [];
       }
-      if (groupType === 0) {
+      if (group === 0) {
         state.members = [{
           uuid: member.uuid,
           username: member.username,

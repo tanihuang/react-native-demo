@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setMemberList } from '@/store/chatRoomSlice';
+import { setMemberList } from '@/store/chatRoom/socket/chatRoomSlice';
+
 import { 
   setChatRoomList, 
   setUpdateChatRoomList, 
@@ -7,12 +8,12 @@ import {
   setChatList, 
   setUpdateChatList, 
   clearChat,
-} from '@/store/chatRoomSlice';
+} from '@/store/chatRoom/socket/chatRoomSlice';
 
 export const updateMembersThunk = createAsyncThunk(
-  'chatroom/updateMembersThunk',
+  'chatroom/socket/updateMembersThunk',
   async (payload: { member: any; group: number }, { dispatch, getState }) => {
     dispatch(setMemberList(payload));
-    return (getState() as { chatroom: any }).chatroom.members;
+    return (getState() as { chatRoomSocket: any }).chatRoomSocket.members;
   }
 );

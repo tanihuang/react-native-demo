@@ -8,7 +8,7 @@ import { Provider, useSelector } from 'react-redux';
 import store from '@/store/index';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, View, StyleSheet, Pressable } from 'react-native';
-import { clearSearch } from '@/store/chatRoomSlice';
+import { clearSearch } from '@/store/chatRoom/socket/chatRoomSlice';
 import AlertDialog from '@/components/dialog/AlertDialog';
 
 SplashScreen.preventAutoHideAsync();
@@ -19,7 +19,7 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
   const router = useRouter();
-  const searchVisible = store.getState().chatroom.searchVisible;
+  const searchVisible = store.getState().chatRoomSocket.searchVisible;
 
 
   // useEffect(() => {

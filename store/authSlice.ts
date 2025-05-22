@@ -1,10 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ref, remove } from 'firebase/database';
+import { db } from '@/services/firebaseConfig';
 
 const initialState = {
   uuid: undefined,
   username: undefined,
-  isLoggedIn: false,
+  role: 0, // 0: 訪客, 1: 會員, 2: 管理員
+  isLogged: false,
 };
 const authSlice = createSlice({
   name: 'user',
@@ -15,22 +18,25 @@ const authSlice = createSlice({
       const params = { 
         ...state,
         ...payload,
-        isLoggedIn: true,
+        isLogged: true,
       };
-      AsyncStorage.setItem('user', JSON.stringify(params));
+      AsyncStorage.setItem('auth', JSON.stringify(params));
       return params;
     },
-    clearUser: () => {
-      AsyncStorage.removeItem('user');
+    clearUser: (state) => {
+      if (state.uuid) {
+        const onlineRef = ref(db, `users/${state.uuid}`);
+        remove(onlineRef);
+      }
+      AsyncStorage.removeItem('auth');
       return initialState;
     },
   },
 });
 
 export const loadUser = () => async (dispatch: any) => {
-  const user = await AsyncStorage.getItem('user');
+  const user = await AsyncStorage.getItem('auth');
   if (user) {
-    console.log(user);
     dispatch(setUser(JSON.parse(user)));
   }
 };

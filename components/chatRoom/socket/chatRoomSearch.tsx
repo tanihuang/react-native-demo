@@ -16,17 +16,17 @@ import {
 import axios from 'axios';
 import store from '@/store/index';
 import { FontAwesome } from '@expo/vector-icons';
-import useChatRoomSocket from '@/services/websocket/chatRoom/socket/useChatRoom';
+import useChatRoom from '@/services/websocket/chatRoom/socket/useChatRoom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setSearchVisible, setSearchItem, setSearchList, clearSearch } from '@/store/chatRoomSlice';
+import { setSearchVisible, setSearchItem, setSearchList, clearSearch } from '@/store/chatRoom/socket/chatRoomSlice';
 import { useHeaderHeight } from '@react-navigation/elements';
 import Default from '@/services/api';
 
 export default function ChatRoomSearch() {
   const user = useSelector((state: any) => state.user);
-  const { searchVisible, searchList } = useSelector((state: any) => state.chatroom);
+  const { searchVisible, searchList } = useSelector((state: any) => state.chatRoomSocket);
   const [search, setSearch] = useState('');
-  const { createChatRoom } = useChatRoomSocket({});
+  const { createChatRoom } = useChatRoom({});
 
   const dispatch = useDispatch();
   const headerHeight = useHeaderHeight();

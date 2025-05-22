@@ -1,4 +1,5 @@
 import moment from 'moment';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 export const toRemoveUser = (data: any[], user: any) => {
   if (Array.isArray(user)) {
@@ -13,13 +14,13 @@ export const toChatRoomName = (
   members: any[],
   user: { uuid: string },
   chatRoomName: string,
-  groupType: number
+  group: number
 ): string => {
   const otherUserName = members
     .filter((item: any) => item.uuid !== user.uuid)
     .map((item: any) => item.username)
     .join(', ');
-  return groupType === 0 ? (otherUserName || chatRoomName) : chatRoomName;
+  return group === 0 ? (otherUserName || chatRoomName) : chatRoomName;
 };
 
 export const toChatRoomListDate = (timestamp: any) => {
@@ -54,3 +55,21 @@ export const toChatRoomDate = (timestamp: number) => {
   if (itemDate.isAfter(startOfYear)) return itemDate.format("MM/DD");
   return null;
 };
+
+export async function apiRequest<T>(
+  method: 'get' | 'post' | 'put' | 'delete',
+  url: string,
+  payload?: any,
+  config?: AxiosRequestConfig
+): Promise<{ success: boolean; data?: T; message?: string }> {
+  try {
+    const { data } = await axios({ method, url, data: payload, ...config });
+    return { success: true, data };
+  } catch (error: any) {
+    const msg = error?.response?.data?.message;
+    return {
+      success: false,
+      message: Array.isArray(msg) ? msg.join(' ') : msg || error.message,
+    };
+  }
+}

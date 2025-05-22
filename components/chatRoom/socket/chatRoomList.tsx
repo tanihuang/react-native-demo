@@ -13,7 +13,7 @@ const isWeb = Platform.OS === 'web';
 
 const ChatRoomList = forwardRef((props: any, ref) => {
   const { user, handleTabChange } = props;
-  const { chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatroom);
+  const { chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatRoomSocket);
   const drawerContentRef = useRef<any>(null);
 
   useImperativeHandle(ref, () => ({
