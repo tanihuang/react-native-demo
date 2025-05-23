@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ref, push, set, onValue, onDisconnect, onChildAdded } from 'firebase/database';
+import { ref, push, set, onValue, onDisconnect, onChildAdded, get } from 'firebase/database';
 import { db } from '@/services/firebaseConfig';
 import { updateMembersThunk } from '@/store/chatRoom/firebase/chatRoomThunk';
-import { setChatRoomList, setChatList, setUpdateChatList } from '@/store/chatRoom/firebase/chatRoomSlice';
+import { setOnlineUser, setChatRoomList, setChatList, setUpdateChatList } from '@/store/chatRoom/firebase/chatRoomSlice';
 
 export default function useChatRoom() {
   const dispatch = useDispatch<any>();
   const user = useSelector((state: any) => state.user);
-  const [onlineUser, setOnlineUser] = useState<any[]>([]);
 
   const PRIVATE_PATH = 'chatRooms/private';
   const PUBLIC_PATH = 'chatRooms/public';
@@ -34,7 +33,7 @@ export default function useChatRoom() {
     const onlineRef = ref(db, 'users');
     onValue(onlineRef, (snapshot) => {
       const data = snapshot.val() || {};
-      setOnlineUser([...Object.values(data)]);
+      dispatch(setOnlineUser(Object.values(data)));
     });
   };
 
@@ -60,18 +59,32 @@ export default function useChatRoom() {
   };
 
   const getChatRoomList = () => {
-    const privateRef = ref(db, PRIVATE_PATH);
+    const roomRef = ref(db, 'chatRooms/private');
+    const msgRef = ref(db, 'messages/private');
   
-    onValue(privateRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      const privateList = Object.values(data).filter((item: any) =>
-        Array.isArray(item.members) &&
-        item.members.some((m: any) => m.uuid === user.uuid)
+    onValue(roomRef, async (snapshot) => {
+      const rooms = Object.values(snapshot.val() || {}).filter((item: any) =>
+        item.members?.some((m: any) => m.uuid === user.uuid)
       );
-      dispatch(setChatRoomList(privateList));
+  
+      const msgSnap = await get(msgRef);
+      const msgData = msgSnap.val() || {};
+  
+      const result = rooms.map((item: any) => {
+        const msgs = Object.values(msgData[item.chatRoomId] || {}).sort(
+          (a: any, b: any) => b.timestamp - a.timestamp
+        );
+        const last = msgs[0] as { content?: string; timestamp?: number } || {};
+        return { 
+          ...item, 
+          lastMessage: last.content || '', 
+          lastMessageTimestamp: last.timestamp || 0 
+        };
+      });
+  
+      dispatch(setChatRoomList(result));
     });
   };
-  
   
   const createChat = async (chatRoomId: string, content: string, user: any) => {
     if (!chatRoomId || !content || !user) return;
@@ -105,7 +118,6 @@ export default function useChatRoom() {
 
   return {
     getOnlineUser,
-    onlineUser,
     createChatRoom,
     getChatRoomList,
     createChat,

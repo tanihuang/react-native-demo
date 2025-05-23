@@ -10,6 +10,7 @@ import { showAlert } from '@/components/dialog/AlertDialog';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { onValue, ref, remove } from 'firebase/database';
 import { db } from '@/services/firebaseConfig';
+import { Default } from '@/constants/ChatRoom';
 
 export function Header({ navigation }: any) {
   const user = useSelector((state: any) => state.user);
@@ -21,7 +22,7 @@ export function Header({ navigation }: any) {
     setDropdowVisible(false);
     showAlert('Logout successful!');
 
-    const privateRef = ref(db, 'chatRooms/private');
+    const privateRef = ref(db, Default.private.chatRoomPath);
     onValue(privateRef, (snapshot) => {
       const data = snapshot.val() || {};
 
@@ -30,8 +31,8 @@ export function Header({ navigation }: any) {
         const isInRoom = members.some((item: any) => item.uuid === user.uuid);
         
         if (isInRoom) {
-          remove(ref(db, `chatRooms/private/${roomId}`));
-          remove(ref(db, `messages/private/${roomId}`));
+          remove(ref(db, `${Default.private.chatRoomPath}/${roomId}`));
+          remove(ref(db, `${Default.private.messagesPath}/${roomId}`));
         }
       });
     }, { onlyOnce: true });

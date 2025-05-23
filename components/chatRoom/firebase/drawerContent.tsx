@@ -34,19 +34,28 @@ const DrawerContent = forwardRef((props: any, ref) => {
 
   const renderItem = ({ item }: any) => {
     const { members, chatRoomName, group, lastMessage, lastMessageTimestamp } = item;
-    const chatRoomTitle = toChatRoomName(members, user, chatRoomName, group);
     const isActive = chatRoom.chatRoomId === item.chatRoomId;
 
+    if (group === 1) {
+      return (
+        <TouchableOpacity
+          style={[styles.chatContainer, isActive && styles.isActive]}
+          onPress={() => handleOnPress(item)}
+        >
+          <Text style={styles.chatName}>{toChatRoomName(members, user, chatRoomName, group)}</Text>
+        </TouchableOpacity>
+      );
+    }
     return (
       <TouchableOpacity
         style={[styles.chatContainer, isActive && styles.isActive]}
         onPress={() => handleOnPress(item)}
       >
-        <View style={styles.chatHeader}>
-          <Text style={styles.chatCreatedBy}>{chatRoomTitle}</Text>
+        <Text style={styles.chatName}>{toChatRoomName(members, user, chatRoomName, group)}</Text>
+        <View style={styles.chatInfo}>
+          <Text style={styles.chatContent}>{lastMessage}</Text>
           <Text style={styles.chatTimestamp}>{lastMessageTimestamp}</Text>
         </View>
-        <Text style={styles.chatContent}>{lastMessage}</Text>
       </TouchableOpacity>
     )
   };
@@ -92,30 +101,35 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   chatContainer: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    padding: 10,
+    paddingHorizontal: 8,
+    marginHorizontal: 8,
     height: 66,
+    borderRadius: 16,
+    justifyContent: 'center',
   },
-  chatHeader: {
+  chatInfo: {
     flexDirection: "row",
-    marginBottom: 5,
     verticalAlign: 'middle',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 5,
   },
-  chatCreatedBy: {
+  chatName: {
     fontSize: 16,
+    color: '#fff',
   },
   chatTimestamp: { 
     fontSize: 12, 
-    color: '#a0aeaf',
+    color: '#fff',
     marginLeft: 10,
   },
   chatContent: { 
     fontSize: 14, 
-    color: "#333333",
+    color: "#fff",
     paddingVertical: 3,
   },
   isActive: {
-    backgroundColor: '#eee',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   }
 });

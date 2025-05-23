@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import {
 setChatRoomStatus,
 setChatRoomItem,
 clearChat,
 } from '@/store/chatRoom/firebase/chatRoomSlice';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 interface Props {
   user: { uuid: string };
@@ -19,25 +18,21 @@ interface Props {
 export default function ChatRoomOnlineUser() {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const { chatRoomStatus, chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatRoomFirebase);
-  const { getOnlineUser, onlineUser, createChatRoom, getChatRoomList, getChat, subChat } = useChatRoom();
-  const chatRoomListRef = useRef<any>(null);
-  const { chatRoomId } = chatRoomItem;
-  const [visible, setVisible] = useState(false);
+  const { chatRoomList, onlineUser } = useSelector((state: any) => state.chatRoomFirebase);
+  const { createChatRoom, getChat, subChat } = useChatRoom();
+  const [visible, setVisible] = useState(true);
+
 
   useEffect(() => {
-    if (user.isLogged) {
-      getOnlineUser(user);
-    }
-  }, [user.isLogged]);
-
+    console.log('onlineUser', onlineUser);
+  }, []);
 
   const handleOnPress = async (targetUser: any) => {
     dispatch(setChatRoomStatus(0));
 
     const room = chatRoomList?.find((room: any) => {
       if (room.group !== 0 || !Array.isArray(room.members)) return false;
-      const uuids = room.members.map((m: any) => m.uuid);
+      const uuids = room.members.map((item: any) => item.uuid);
       return uuids.includes(user.uuid) && uuids.includes(targetUser.uuid);
     });
 
@@ -46,22 +41,28 @@ export default function ChatRoomOnlineUser() {
     dispatch(setChatRoomItem(result));
     getChat(result.chatRoomId);
     subChat(result.chatRoomId);
-};
+  };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.toggleButton} 
-        onPress={() => setVisible(!visible)}
-        activeOpacity={1}
-      >
-        <Ionicons name="document-text-outline" size={24} color="white" />
+      <TouchableOpacity onPress={() => setVisible(!visible)} activeOpacity={1}>
+        <View style={styles.buttonContent}>
+          <FontAwesome
+            name={visible ? 'angle-down' : 'angle-up'} 
+            size={24} 
+            color="#fff" 
+          />
+          <Text style={styles.button}>在線用戶</Text>
+          {(onlineUser.length - 1) > 0 && (
+            <Text style={styles.number}>{onlineUser.length - 1}</Text>
+          )}
+        </View>
       </TouchableOpacity>
 
       {visible && (
-        <View style={styles.dropdown}>
+        <View style={styles.onlineUserContainer}>
           <FlatList
-            data={onlineUser.filter((item) => item.uuid !== user.uuid)}
+            data={onlineUser.filter((item: any) => item.uuid !== user.uuid)}
             keyExtractor={(item) => item.uuid}
             ListEmptyComponent={<Text style={styles.noUser}>無其他在線用戶</Text>}
             renderItem={({ item }) => (
@@ -79,51 +80,54 @@ export default function ChatRoomOnlineUser() {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    zIndex: 100,
-    alignItems: 'flex-end',
+    // position: 'absolute',
+    // top: 20,
+    // right: 20,
+    // zIndex: 100,
+    // alignItems: 'flex-end',
   },
-  toggleButton: {
-    width: 48,
-    height: 48,
-    backgroundColor: 'rgba(0,0,0,1)',
-    borderRadius: 24,
+  buttonContent: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  button: {
+    color: '#fff',
+    height: 64,
+    fontSize: 18,
+    alignItems: 'center',
+    display: 'flex',
+    marginLeft: 11,
+  },
+  number: {
+    backgroundColor: 'rgba(84, 92, 143, 0.3)',
+    borderRadius: 5,
+    marginLeft: 11,
+    color: '#fff',
+    fontSize: 12,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
   },
   label: {
     color: '#fff',
     fontSize: 14,
     marginLeft: 6,
   },
-  dropdown: {
-    marginTop: 4,
-    backgroundColor: '#fff',
-    width: 180,
-    maxHeight: 300,
-    borderRadius: 8,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 4,
-  },
   noUser: {
     textAlign: 'center',
     color: '#888',
     fontSize: 13,
   },
+  onlineUserContainer: {
+    paddingHorizontal: 16,
+  },
   item: {
+    color: '#fff',
     paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomWidth: 0,
   },
   username: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: 16,
+    color: '#fff',
   },
 });

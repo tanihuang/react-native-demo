@@ -11,17 +11,20 @@ export const toRemoveUser = (data: any[], user: any) => {
 };
 
 export const toChatRoomName = (
-  members: any[],
+  members: any[] = [],
   user: { uuid: string },
   chatRoomName: string,
   group: number
 ): string => {
-  const otherUserName = members
-    .filter((item: any) => item.uuid !== user.uuid)
-    .map((item: any) => item.username)
-    .join(', ');
-  return group === 0 ? (otherUserName || chatRoomName) : chatRoomName;
+  if (group === 0 && members.length) {
+    return members
+      .filter((m) => m.uuid !== user.uuid)
+      .map((m) => m.username)
+      .join(', ') || chatRoomName;
+  }
+  return chatRoomName;
 };
+
 
 export const toChatRoomListDate = (timestamp: any) => {
   if (!timestamp) {

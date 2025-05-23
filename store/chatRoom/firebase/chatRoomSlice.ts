@@ -4,15 +4,19 @@ import { toChatRoomDate } from "@/utils/utils";
 const chatRoomSlice = createSlice({
   name: 'chatRoomFirebase',
   initialState: {
+    onlineUser: [] as any,
     members: [] as { uuid: string; username: string }[],
     chatRoomStatus: 1, // 0 private, 1 public
-    chatRoomList: [],
+    chatRoomList: [] as any,
     chatRoomItem: {
       chatRoomId: undefined as any,
     },
     chatList: {} as Record<string, any[]>,
   },
   reducers: {
+    setOnlineUser: (state, action) => {
+      state.onlineUser = action.payload;
+    },
     setMemberList: (
       state, 
       action: { payload: { member: any, group: number }}
@@ -24,7 +28,14 @@ const chatRoomSlice = createSlice({
       state.chatRoomStatus = action.payload;
     },
     setChatRoomList: (state, action) => {
-      state.chatRoomList = action.payload;
+      const initialState = {
+        chatRoomId: 'public',
+        chatRoomName: '大廳',
+        group: 1,
+      };
+    
+      const updatedData = action.payload.filter((item: any) => item.chatRoomId !== 'public');
+      state.chatRoomList = [initialState, ...updatedData];
     },
     setChatRoomItem: (state, action) => {
       state.chatRoomItem = action.payload;
@@ -57,6 +68,7 @@ const chatRoomSlice = createSlice({
 });
 
 export const {
+  setOnlineUser,
   setMemberList,
   setChatRoomStatus,
   setChatRoomList,

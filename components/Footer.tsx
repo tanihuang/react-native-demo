@@ -18,10 +18,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#eee',
     display: 'flex',
-    paddingVertical: 15,
+    paddingVertical: 8,
   },
   text: {
-    fontSize: 14,
+    fontSize: 12,
     textAlign: 'center',
   }
 });

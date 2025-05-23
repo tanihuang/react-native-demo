@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import { Feather } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function ChatRoomInput(props: any) {
   const { user, chatRoomId } = props;
@@ -59,7 +60,7 @@ export default function ChatRoomInput(props: any) {
         value={form.content}
         onChangeText={value => handleInputChange('content', value)}
         placeholder='message'
-        placeholderTextColor='#333'
+        placeholderTextColor='#fff6'
         multiline={true}
         numberOfLines={3}
         clearButtonMode='always'
@@ -84,7 +85,7 @@ export default function ChatRoomInput(props: any) {
           style={styles.buttonSubmit}
           onPress={() => handleSubmit()}
         >
-          <Feather name='send' size={20} color='black' />
+          <Ionicons size={20} name="send" style={styles.icon} />
         </Pressable>
       </View>
     </View>
@@ -110,7 +111,6 @@ const styles = StyleSheet.create({
     padding: 5,
     display: 'flex',
     justifyContent: 'center',
-    backgroundColor: '#fff',
   },
   buttonSubmit: {
     borderRadius: 15,
@@ -118,6 +118,12 @@ const styles = StyleSheet.create({
   buttonSubmitText: {
     color: 'white',
     textAlign: 'center',
+  },
+  icon: {
+    color: '#fff6',
+    backgroundColor: 'transparent',
+    padding: 0,
+    margin: 0,
   },
   isFocused: {
     borderColor: 'red',

@@ -7,7 +7,10 @@ import DrawerContent from './drawerContent';
 import { useRouter } from 'expo-router';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import ChatRoomInput from './chatRoomInput';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { toChatRoomName, toChatRoomListDate } from '@/utils/utils';
 
+const Stack = createNativeStackNavigator();
 const { width } = Dimensions.get('window');
 const Drawer = createDrawerNavigator();
 const isWeb = Platform.OS === 'web';
@@ -28,13 +31,66 @@ const ChatRoomList = forwardRef((props: any, ref) => {
     return null;
   }
 
-  const roomsToRender = chatRoomList.length
-    ? chatRoomList
-    : [];
+  const initialOptions: any = {
+    headerStyle: {
+      backgroundColor: 'rgb(32, 37, 64)',
+      borderWidth: 0,
+    } as any,
+    headerTitleStyle: {
+      color: '#fff',
+      fontWeight: 'bold',
+    },
+    headerTintColor: '#fff',
+    contentStyle: { backgroundColor: 'rgb(32, 37, 64)' },
+  }
 
   return (
     <View style={styles.container}>
-      <Drawer.Navigator
+      <Stack.Navigator initialRouteName="ChatRoomList">
+        <Stack.Screen
+          name="ChatRoomList"
+          options={{
+            ...initialOptions,
+            title: '聊天室列表',
+          }}
+        >
+          {(props) => (
+            <DrawerContent 
+              {...props}
+              ref={drawerContentRef}
+              user={user}
+              chatRoomList={chatRoomList} 
+              chatRoom={chatRoom}
+              handleTabChange={handleTabChange}
+            />
+          )}
+        </Stack.Screen>
+        {chatRoomList.map((item: any) => {
+          const chatRoomName = toChatRoomName(item.members, user, item.chatRoomName, item.group);
+          return (
+            <Stack.Screen
+              key={item.chatRoomId}
+              name={item.chatRoomId}
+              options={({ route }) => ({
+                ...initialOptions,
+                title: chatRoomName,
+              })}
+            >
+              {() => (
+                <ChatRoomScreen
+                  {...item}
+                  user={user}
+                  chat={chatList[item.chatRoomId] || []}
+                  onMount={() => {
+                    handleTabChange?.(item);
+                  }}
+                />
+              )}
+            </Stack.Screen>
+          )
+        })}
+      </Stack.Navigator>
+      {/* <Drawer.Navigator
         initialRouteName={chatRoom.chatRoomId}
         screenOptions={{
           drawerPosition: 'left',
@@ -70,7 +126,7 @@ const ChatRoomList = forwardRef((props: any, ref) => {
             )}
           </Drawer.Screen>
         ))}
-      </Drawer.Navigator>
+      </Drawer.Navigator> */}
     </View>
   );
 });
@@ -80,6 +136,6 @@ export default ChatRoomList;
 const styles = StyleSheet.create({
   container: { 
     flex: 1,
-    minHeight: 'auto' 
+    minHeight: 'auto',
   },
 });
