@@ -1,13 +1,23 @@
+# Ignore environment variable files
+.env
+.env.local
+.env.*.local
+
+# Node / build output
 node_modules/
 .expo/
 dist/
 npm-debug.*
+
+# Sensitive files
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
 *.orig.*
+
+# Build artifacts
 web-build/
 
 # macOS

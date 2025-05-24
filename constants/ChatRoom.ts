@@ -6,6 +6,10 @@ export const Default = {
   public: {
     chatRoomPath: 'chatRooms/public',
     messagesPath: 'messages/public',
+  },
+  users: {
+    users: 'users',
+    usersCanvas: 'usersCanvas',
   }
 };
   

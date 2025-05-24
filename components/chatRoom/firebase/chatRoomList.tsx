@@ -4,11 +4,9 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useSelector } from 'react-redux';
 import ChatRoomScreen from './chatRoomScreen';
 import DrawerContent from './drawerContent';
-import { useRouter } from 'expo-router';
-import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
-import ChatRoomInput from './chatRoomInput';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { toChatRoomName, toChatRoomListDate } from '@/utils/utils';
+import { drawerContentRef } from '@/constants/Ref';
 
 const Stack = createNativeStackNavigator();
 const { width } = Dimensions.get('window');
@@ -19,13 +17,12 @@ const ChatRoomList = forwardRef((props: any, ref) => {
   const { chatRoom, chatRoomList, handleTabChange } = props;
   const { chatList, chatRoomItem } = useSelector((state: any) => state.chatRoomFirebase);
   const user = useSelector((state: any) => state.user);
-  const drawerContentRef = useRef<any>(null);
 
-  useImperativeHandle(ref, () => ({
-    handleOnPress: (chatRoomId: string) => {
-      drawerContentRef.current?.handleOnPress(chatRoomId);
-    },
-  }));
+  // useImperativeHandle(ref, () => ({
+  //   handleOnPress: (chatRoomId: string) => {
+  //     drawerContentRef.current?.handleOnPress(chatRoomId);
+  //   },
+  // }));
   
   if (!chatRoomList?.length || !chatRoomItem?.chatRoomId) {
     return null;

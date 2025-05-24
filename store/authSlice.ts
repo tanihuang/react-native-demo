@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ref, remove } from 'firebase/database';
 import { db } from '@/services/firebaseConfig';
+import { Default } from '@/constants/ChatRoom';
 
 const initialState = {
   uuid: undefined,
@@ -25,8 +26,8 @@ const authSlice = createSlice({
     },
     clearUser: (state) => {
       if (state.uuid) {
-        remove(ref(db, `users/${state.uuid}`));
-        remove(ref(db, `usersCanvas/${state.uuid}`));
+        remove(ref(db, `${Default.users.users}/${state.uuid}`));
+        remove(ref(db, `${Default.users.usersCanvas}/${state.uuid}`));
       }
       AsyncStorage.removeItem('auth');
       return initialState;

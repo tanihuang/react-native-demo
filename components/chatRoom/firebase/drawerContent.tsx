@@ -8,10 +8,12 @@ import {
   setChatRoomItem,
   clearChat,
 } from '@/store/chatRoom/firebase/chatRoomSlice';
+import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 
 const DrawerContent = forwardRef((props: any, ref) => {
   const dispatch = useDispatch();
   const { navigation, chatRoomList, chatRoom, user, handleTabChange } = props;
+    const { createChatRoom, getChatRoomList, getChat, subChat } = useChatRoom();
 
   useImperativeHandle(ref, () => ({
     handleOnPress,
@@ -26,9 +28,11 @@ const DrawerContent = forwardRef((props: any, ref) => {
     });
   }, [chatRoomList]);
 
-  const handleOnPress = (params: any) => {
-    navigation.navigate(params.chatRoomId);
-    dispatch(setChatRoomItem(params));
+  const handleOnPress = (param: any) => {
+    navigation.navigate(param.chatRoomId);
+    dispatch(setChatRoomItem(param));
+    getChat(param.chatRoomId);
+    subChat(param.chatRoomId);
     // navigation.navigate(params.chatRoomId, { chatRoomName: params.chatRoomName });
   };
 

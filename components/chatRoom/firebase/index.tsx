@@ -23,8 +23,8 @@ const PUBLIC_ROOM = {
 export default function ChatRoom() {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
-  const { chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatRoomFirebase);
-  const { getOnlineUser, getChatRoomList, getChat, subChat } = useChatRoom();
+  const { onlineUser, chatRoomList, chatRoomItem, chatList } = useSelector((state: any) => state.chatRoomFirebase);
+  const { getOnlineUser, getChatRoomList, getChat, subChat, clearListener } = useChatRoom();
   const chatRoomListRef = useRef<any>(null);
   const { chatRoomId } = chatRoomItem;
 
@@ -39,23 +39,27 @@ export default function ChatRoom() {
 
       onValue(publicRef, (snap) => {
         Object.entries(snap.val() || {}).forEach(([id, msg]: any) => {
-          if (msg.timestamp < now) {
+          if (msg.timestamp < now - 60 * 60 * 1000) {
             remove(ref(db, `${Default.public.messagesPath}/${id}`));
           }
         });
       }, { onlyOnce: true });
-
-      return () => off(publicRef);
     } else {
-      chatRoomList.forEach((item: any) => {
-        if (item.members?.[user.uuid]) {
-          remove(ref(db, `${Default.private.chatRoomPath}/${item.chatRoomId}`));
-          remove(ref(db, `${Default.private.messagesPath}/${item.chatRoomId}`));
-        }
-      });
+      const onlineSet = new Set(onlineUser.map((item: any) => item.uuid));
+      chatRoomList
+        .filter((room: any) => room.group === 0)
+        .forEach((room: any) => {
+          const offline = room.members.every((item: any) => !onlineSet.has(item.uuid));
+          if(offline) {
+            remove(ref(db, `${Default.private.chatRoomPath}/${room.chatRoomId}`));
+            remove(ref(db, `${Default.private.messagesPath}/${room.chatRoomId}`));
+          }
+        });
       dispatch(clearChat());
     }
-    return () => off(publicRef);
+    return () => {
+      clearListener(chatRoomId);
+    };
   }, [user.isLogged]);
 
   useEffect(() => {
@@ -89,6 +93,7 @@ export default function ChatRoom() {
       <ChatRoomSlide
         user={user}
         chat={chatList[PUBLIC_ROOM.chatRoomId] || []}
+        chatRoom={chatRoomItem}
       >
         <ChatRoomList
           ref={chatRoomListRef}

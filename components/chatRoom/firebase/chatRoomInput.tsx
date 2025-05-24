@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   StyleSheet,
   Image,
@@ -12,8 +12,9 @@ import {
   Alert,
 } from 'react-native';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
-import { Feather } from '@expo/vector-icons';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { db } from '@/services/firebaseConfig';
+import { ref, set } from 'firebase/database';
 
 export default function ChatRoomInput(props: any) {
   const { user, chatRoomId } = props;
@@ -21,7 +22,7 @@ export default function ChatRoomInput(props: any) {
     content: '',
   });
   const [isFocused, setIsFocused] = useState(false);
-  const { createChat, getChat } = useChatRoom();
+  const { createChat, getChat, getChatRoomList } = useChatRoom();
 
   const handleInputChange = async (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -34,19 +35,10 @@ export default function ChatRoomInput(props: any) {
       return;
     }
 
-    const params = {
-      createdBy: user.uuid,
-      chatRoomId,
-      content,
-      user: {
-        uuid: user.uuid,
-        username: user.username,
-      },
-      timestamp: Date.now(),
-    }
-
     await createChat(chatRoomId, content, user);
     await getChat(chatRoomId);
+    await set(ref(db, `chatRooms/private/${chatRoomId}/lastMessage`), content);
+    await set(ref(db, `chatRooms/private/${chatRoomId}/lastMessageTimestamp`), Date.now());
     setForm((prev: any) => ({ ...prev, content: '' }));
   };
 

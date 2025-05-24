@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ref, push, set, onValue, onDisconnect, onChildAdded, get } from 'firebase/database';
+import { ref, push, set, onValue, onDisconnect, onChildAdded, get, off } from 'firebase/database';
 import { db } from '@/services/firebaseConfig';
 import { updateMembersThunk } from '@/store/chatRoom/firebase/chatRoomThunk';
 import { setOnlineUser, setChatRoomList, setChatList, setUpdateChatList } from '@/store/chatRoom/firebase/chatRoomSlice';
+import { Default } from '@/constants/ChatRoom';
 
 export default function useChatRoom() {
   const dispatch = useDispatch<any>();
@@ -14,8 +15,8 @@ export default function useChatRoom() {
 
   const getChatPath = (chatRoomId: string) =>
     chatRoomId === 'public'
-      ? `messages/public`
-      : `messages/private/${chatRoomId}`;
+      ? Default.public.messagesPath
+      : `${Default.private.messagesPath}/${chatRoomId}`;
 
   const getOnlineUser = (user: any) => {
     if (!user?.uuid) return;
@@ -61,8 +62,8 @@ export default function useChatRoom() {
   };
 
   const getChatRoomList = () => {
-    const roomRef = ref(db, 'chatRooms/private');
-    const msgRef = ref(db, 'messages/private');
+    const roomRef = ref(db, Default.private.chatRoomPath);
+    const msgRef = ref(db, Default.private.messagesPath);
   
     onValue(roomRef, async (snapshot) => {
       const rooms = Object.values(snapshot.val() || {}).filter((item: any) =>
@@ -85,7 +86,7 @@ export default function useChatRoom() {
       });
   
       dispatch(setChatRoomList(result));
-    }, { onlyOnce: true });
+    });
   };
   
   const createChat = async (chatRoomId: string, content: string, user: any) => {
@@ -116,6 +117,14 @@ export default function useChatRoom() {
       dispatch(setUpdateChatList({ chatRoomId, messages }));
     });
   };
+
+  const clearListener = (chatRoomId: string) => {
+    off(ref(db, Default.users.users));
+    off(ref(db, Default.users.usersCanvas));
+    off(ref(db, Default.public.messagesPath));
+    off(ref(db, Default.private.chatRoomPath));
+    off(ref(db, Default.private.messagesPath));
+  };
   
 
   return {
@@ -125,5 +134,6 @@ export default function useChatRoom() {
     createChat,
     getChat,
     subChat,
+    clearListener,
    };
 }

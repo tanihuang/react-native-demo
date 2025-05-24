@@ -7,6 +7,8 @@ setChatRoomItem,
 } from '@/store/chatRoom/firebase/chatRoomSlice';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import { FontAwesome } from '@expo/vector-icons';
+import store from '@/store';
+import { drawerContentRef } from '@/constants/Ref';
 
 interface Props {
   user: { uuid: string };
@@ -19,24 +21,30 @@ export default function ChatRoomOnlineUser(props: any) {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
   const { chatRoomList, onlineUser } = useSelector((state: any) => state.chatRoomFirebase);
-  const { createChatRoom, getChat, subChat } = useChatRoom();
+  const { createChatRoom, getChatRoomList, getChat, subChat } = useChatRoom();
   const [visible, setVisible] = useState(true);
 
-  const handleOnPress = async (targetUser: any) => {
+  const handleOnPress = async (param: any) => {
     dispatch(setChatRoomStatus(0));
-    handleTogglePanel();
-
-    const room = chatRoomList?.find((room: any) => {
-      if (room.group !== 0 || !Array.isArray(room.members)) return false;
-      const uuids = room.members.map((item: any) => item.uuid);
-      return uuids.includes(user.uuid) && uuids.includes(targetUser.uuid);
+  
+    const { chatRoomList } = store.getState().chatRoomFirebase;
+  
+    let room = chatRoomList.find((item: any) =>
+      item.group === 0 &&
+      Array.isArray(item.members) &&
+      item.members.some((m: any) => m.uuid === user.uuid) &&
+      item.members.some((m: any) => m.uuid === param.uuid)
+    );
+  
+    if (!room) {
+      room = await createChatRoom([user, param], 0);
+      await getChatRoomList();
+    }
+  
+    await handleTogglePanel?.('chat');
+    requestAnimationFrame(() => {
+      drawerContentRef.current?.handleOnPress(room);
     });
-
-    const result = room || await createChatRoom([user, targetUser], 0);
-
-    dispatch(setChatRoomItem(result));
-    getChat(result.chatRoomId);
-    subChat(result.chatRoomId);
   };
 
   return (

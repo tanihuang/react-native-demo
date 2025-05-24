@@ -1,18 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { toChatRoomDate } from "@/utils/utils";
 
+const initialState = {
+  onlineUser: [] as any,
+  members: [] as { uuid: string; username: string }[],
+  chatRoomStatus: 1, // 0 private, 1 public
+  chatRoomList: [] as any,
+  chatRoomItem: {
+    chatRoomId: undefined as any,
+  },
+  chatList: {} as Record<string, any[]>,
+};
+
 const chatRoomSlice = createSlice({
   name: 'chatRoomFirebase',
-  initialState: {
-    onlineUser: [] as any,
-    members: [] as { uuid: string; username: string }[],
-    chatRoomStatus: 1, // 0 private, 1 public
-    chatRoomList: [] as any,
-    chatRoomItem: {
-      chatRoomId: undefined as any,
-    },
-    chatList: {} as Record<string, any[]>,
-  },
+  initialState,
   reducers: {
     setOnlineUser: (state, action) => {
       state.onlineUser = action.payload;
@@ -55,15 +57,7 @@ const chatRoomSlice = createSlice({
         [chatRoomId]: [...existing, messages.filter(Boolean)],
       };
     },
-    clearChat: (state) => {
-      state.members = [];
-      state.chatRoomStatus = 1;
-      state.chatRoomList = [];
-      state.chatRoomItem = {
-        chatRoomId: undefined,
-      };
-      state.chatList = {};
-    },
+    clearChat: () => initialState,
   },
 });
 

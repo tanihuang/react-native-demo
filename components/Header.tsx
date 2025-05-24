@@ -21,22 +21,6 @@ export function Header({ navigation }: any) {
     dispatch(clearUser());
     dispatch(clearSearch());
     setDropdowVisible(false);
-
-    const privateRef = ref(db, Default.private.chatRoomPath);
-    onValue(privateRef, (snapshot) => {
-      const data = snapshot.val() || {};
-
-      Object.entries(data).forEach(([roomId, room]: any) => {
-        const members = room.members || [];
-        const isInRoom = members.some((item: any) => item.uuid === user.uuid);
-        
-        if (isInRoom) {
-          remove(ref(db, `${Default.private.chatRoomPath}/${roomId}`));
-          remove(ref(db, `${Default.private.messagesPath}/${roomId}`));
-        }
-      });
-    }, { onlyOnce: true });
-
     showAlert('Logout successful!');
     router.push("/");
   };

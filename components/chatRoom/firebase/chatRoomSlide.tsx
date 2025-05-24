@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Animated, Dimensions, Platform } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import ChatRoomOnlineUser from './chatRoomOnlineUser';
 import ChatRoomCanvas from './chatRoomCanvas';
+import { drawerContentRef } from '@/constants/Ref';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function ChatRoomSlide( props: any) {
-  const { user, chat, children } = props;
+  const { user, chat, chatRoom, children } = props;
   const [activePanel, setActivePanel] = useState<string | null>(null);
   const translateX = useState(new Animated.Value(screenWidth))[0];
 
-  const handleOnPress = (param: string) => {
+  const handleOnPress = async (param: string) => {
     const isActive = activePanel === param;
-  
-    Animated.timing(translateX, {
-      toValue: isActive ? screenWidth : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      setActivePanel(isActive ? null : param);
+    return new Promise((resolve) => {
+      Animated.timing(translateX, {
+        toValue: isActive ? screenWidth : 0,
+        duration: 300,
+        useNativeDriver: Platform.OS !== 'web',
+      }).start(() => {
+        setActivePanel(isActive ? null : param);
+        resolve(true);
+      });
     });
   };
 
