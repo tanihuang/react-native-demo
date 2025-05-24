@@ -33,7 +33,9 @@ export default function useChatRoom() {
     const onlineRef = ref(db, 'users');
     onValue(onlineRef, (snapshot) => {
       const data = snapshot.val() || {};
-      dispatch(setOnlineUser(Object.values(data)));
+      setTimeout(() => {
+        dispatch(setOnlineUser(Object.values(data)));
+      }, 0);
     });
   };
 
@@ -83,7 +85,7 @@ export default function useChatRoom() {
       });
   
       dispatch(setChatRoomList(result));
-    });
+    }, { onlyOnce: true });
   };
   
   const createChat = async (chatRoomId: string, content: string, user: any) => {

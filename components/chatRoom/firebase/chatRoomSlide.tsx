@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import ChatRoomOnlineUser from './chatRoomOnlineUser';
+import ChatRoomCanvas from './chatRoomCanvas';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function ChatRoomSlidePanel({ children }: { children: React.ReactNode }) {
+export default function ChatRoomSlide( props: any) {
+  const { user, chat, children } = props;
   const [activePanel, setActivePanel] = useState<string | null>(null);
   const translateX = useState(new Animated.Value(screenWidth))[0];
 
@@ -22,8 +24,26 @@ export default function ChatRoomSlidePanel({ children }: { children: React.React
   };
 
   return (
-    <>
-      <View style={styles.container}>
+    <View style={styles.container}>
+      <View style={styles.topContainer}>
+      <View style={[styles.canvasWrapper, activePanel ? { marginRight: 2.5 } : null]}>
+        <ChatRoomCanvas user={user} chat={chat || []} />
+      </View>
+        <Animated.View 
+          style={[
+            styles.animatedWrapper,
+            activePanel ? { marginLeft: 2.5, width: 350 } : { width: 0 },
+            { transform: [{ translateX }] }
+          ]}
+        >
+          <View style={styles.borderContainer}>
+            {activePanel === 'user' && <ChatRoomOnlineUser handleTogglePanel={() => handleOnPress('chat')}/>}
+            {activePanel === 'chat' && children}
+          </View>
+        </Animated.View>
+      </View>
+
+      <View style={styles.buttonContainer}>
         <TouchableOpacity 
           activeOpacity={1}
           onPress={() => handleOnPress('chat')}
@@ -45,25 +65,22 @@ export default function ChatRoomSlidePanel({ children }: { children: React.React
           <FontAwesome5 name="user-friends" size={14} color="white" />
         </TouchableOpacity>
       </View>
-
-      <Animated.View style={[styles.animatedContainer, { transform: [{ translateX }] }]}>
-        <View style={styles.chatRoomContainer}>
-          {activePanel === 'user' && <ChatRoomOnlineUser />}
-          {activePanel === 'chat' && children}
-        </View>
-      </Animated.View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 50,
+    flex: 1,
+    flexDirection: 'column',
     backgroundColor: 'rgb(32, 37, 64)',
+    paddingHorizontal: 5,
+  },
+  topContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  buttonContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -83,17 +100,13 @@ const styles = StyleSheet.create({
   buttonActive: {
     backgroundColor: 'rgb(84, 92, 143)',
   },
-  animatedContainer: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    width: 350,
-    backgroundColor: 'rgb(32, 37, 64)',
-    padding: 5,
-    paddingBottom: 50,
+  canvasWrapper: {
+    flex: 1,
   },
-  chatRoomContainer: {
+  animatedWrapper: {
+    width: 350,
+  },
+  borderContainer: {
     flex: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 1,

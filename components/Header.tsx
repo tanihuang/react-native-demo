@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { setUser, clearUser } from '@/store/authSlice';
 import { clearSearch } from '@/store/chatRoom/socket/chatRoomSlice';
 import { showAlert } from '@/components/dialog/AlertDialog';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { onValue, ref, remove } from 'firebase/database';
 import { db } from '@/services/firebaseConfig';
 import { Default } from '@/constants/ChatRoom';
@@ -16,11 +16,11 @@ export function Header({ navigation }: any) {
   const user = useSelector((state: any) => state.user);
   const router = useRouter();
   const dispatch = useDispatch();
+
   const handleLogout = async () => {
     dispatch(clearUser());
     dispatch(clearSearch());
     setDropdowVisible(false);
-    showAlert('Logout successful!');
 
     const privateRef = ref(db, Default.private.chatRoomPath);
     onValue(privateRef, (snapshot) => {
@@ -37,7 +37,7 @@ export function Header({ navigation }: any) {
       });
     }, { onlyOnce: true });
 
-    remove(ref(db, `users/${user.uuid}`));
+    showAlert('Logout successful!');
     router.push("/");
   };
   const [dropdowVisible, setDropdowVisible] = useState(false);
@@ -46,8 +46,16 @@ export function Header({ navigation }: any) {
     { id: 'Exit', label: 'Exit', action: handleLogout },
   ];
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ChatRoom</Text>
+    <View
+      style={[
+        styles.container,
+        user.isLogged && { backgroundColor: 'rgb(32, 37, 64)' }
+      ]}
+    >
+      <Text style={[
+        styles.title,
+        user.isLogged && { color: '#fff' }
+      ]}>ChatRoom</Text>
       {/* <Text style={styles.title} onPress={() => router.push('/')}>ChatRoom</Text> */}
       {user.isLogged && (
         <>
@@ -58,11 +66,17 @@ export function Header({ navigation }: any) {
               activeOpacity={1}
               style={{ flexDirection: 'row', alignItems: 'center' }}
             >
-              <Text style={styles.user}>{user.username}</Text>
-              <Ionicons
-                name={dropdowVisible ? 'caret-up' : 'caret-down'}
-                size={18}
-                style={{ marginLeft: 5 }}
+              <Text style={[
+                styles.user,
+                user.isLogged && { color: '#fff' }
+              ]}>{user.username}</Text>
+              <FontAwesome
+                name={dropdowVisible ? 'angle-up' : 'angle-down'} 
+                size={24} 
+                style={{
+                  marginLeft: 5,
+                  color: user.isLogged ? '#fff' : '#000'
+                }}
               />
             </TouchableOpacity>
             {/* <Text>{JSON.stringify(user)}</Text> */}
@@ -95,10 +109,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
     justifyContent: 'space-between',
-    borderBottomColor: '#ddd',
-    borderBottomWidth: 1,
+    // borderColor: 'rgba(255, 255, 255, 0.1)',
+    // borderBottomWidth: 1,
+    backgroundColor: '#fff',
     minHeight: 50,
     zIndex: 9999,
   },
@@ -106,6 +120,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     fontWeight: 'bold',
+    color: '#000',
   },
   userContainer: {
     position: 'relative',
@@ -113,6 +128,7 @@ const styles = StyleSheet.create({
   user: {
     fontSize: 16,
     textAlign: 'center',
+    color: '#000',
   },
   flatListContainer: {
     marginTop: 10,

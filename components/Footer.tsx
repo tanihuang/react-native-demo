@@ -16,9 +16,9 @@ export default Footer;
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
-    backgroundColor: '#eee',
+    backgroundColor: '#fff',
     display: 'flex',
-    paddingVertical: 8,
+    paddingVertical: 5,
   },
   text: {
     fontSize: 12,

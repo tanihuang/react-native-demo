@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
 setChatRoomStatus,
 setChatRoomItem,
-clearChat,
 } from '@/store/chatRoom/firebase/chatRoomSlice';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import { FontAwesome } from '@expo/vector-icons';
@@ -15,20 +14,17 @@ interface Props {
   onPress: (targetUser: any) => void;
 }
 
-export default function ChatRoomOnlineUser() {
+export default function ChatRoomOnlineUser(props: any) {
+  const { handleTogglePanel } = props
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
   const { chatRoomList, onlineUser } = useSelector((state: any) => state.chatRoomFirebase);
   const { createChatRoom, getChat, subChat } = useChatRoom();
   const [visible, setVisible] = useState(true);
 
-
-  useEffect(() => {
-    console.log('onlineUser', onlineUser);
-  }, []);
-
   const handleOnPress = async (targetUser: any) => {
     dispatch(setChatRoomStatus(0));
+    handleTogglePanel();
 
     const room = chatRoomList?.find((room: any) => {
       if (room.group !== 0 || !Array.isArray(room.members)) return false;
@@ -48,7 +44,7 @@ export default function ChatRoomOnlineUser() {
       <TouchableOpacity onPress={() => setVisible(!visible)} activeOpacity={1}>
         <View style={styles.buttonContent}>
           <FontAwesome
-            name={visible ? 'angle-down' : 'angle-up'} 
+            name={visible ? 'angle-up' : 'angle-down'} 
             size={24} 
             color="#fff" 
           />
@@ -80,11 +76,6 @@ export default function ChatRoomOnlineUser() {
 
 const styles = StyleSheet.create({
   container: {
-    // position: 'absolute',
-    // top: 20,
-    // right: 20,
-    // zIndex: 100,
-    // alignItems: 'flex-end',
   },
   buttonContent: {
     flexDirection: 'row',

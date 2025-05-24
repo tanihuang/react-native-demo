@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     boxShadow: '0 0 0 rgba(0, 0, 0, 0)',
+    color: '#fff',
   },
   buttomContainer: {
     position: 'absolute',

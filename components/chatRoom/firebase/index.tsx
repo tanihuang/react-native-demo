@@ -1,20 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Animated, Dimensions } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ChatRoomList from './chatRoomList';
 import ChatRoomInput from './chatRoomInput';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
-import { ref, remove, onValue } from 'firebase/database';
+import { ref, remove, onValue, off } from 'firebase/database';
 import { db } from '@/services/firebaseConfig';
 import {
   setChatRoomStatus,
   setChatRoomItem,
   clearChat,
 } from '@/store/chatRoom/firebase/chatRoomSlice';
-import ChatRoomScreen from './chatRoomScreen';
-import ChatRoomOnlineUser from './chatRoomOnlineUser';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import ChatRoomSlidePanel from './chatRoomSlidePanel';
+import ChatRoomSlide from './chatRoomSlide';
 import { Default } from '@/constants/ChatRoom';
 
 const PUBLIC_ROOM = {
@@ -32,18 +29,23 @@ export default function ChatRoom() {
   const { chatRoomId } = chatRoomItem;
 
   useEffect(() => {
+    const publicRef = ref(db, Default.public.messagesPath);
+
     if (user.isLogged) {
       getOnlineUser(user);
       getChatRoomList();
 
       const now = Date.now();
-      onValue(ref(db, Default.public.messagesPath), (snap) => {
+
+      onValue(publicRef, (snap) => {
         Object.entries(snap.val() || {}).forEach(([id, msg]: any) => {
           if (msg.timestamp < now) {
             remove(ref(db, `${Default.public.messagesPath}/${id}`));
           }
         });
       }, { onlyOnce: true });
+
+      return () => off(publicRef);
     } else {
       chatRoomList.forEach((item: any) => {
         if (item.members?.[user.uuid]) {
@@ -53,6 +55,7 @@ export default function ChatRoom() {
       });
       dispatch(clearChat());
     }
+    return () => off(publicRef);
   }, [user.isLogged]);
 
   useEffect(() => {
@@ -83,28 +86,24 @@ export default function ChatRoom() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.chatRoomContainer}>
-        <ChatRoomScreen 
+      <ChatRoomSlide
+        user={user}
+        chat={chatList[PUBLIC_ROOM.chatRoomId] || []}
+      >
+        <ChatRoomList
+          ref={chatRoomListRef}
           user={user}
-          chat={chatList[PUBLIC_ROOM.chatRoomId] || []}
-          variant="public"
+          chat={chatList[chatRoomId]}
+          chatRoom={chatRoomItem}
+          chatRoomList={chatRoomList}
+          handleTabChange={(params: any) => {
+            dispatch(setChatRoomItem(params));
+            getChat(params.chatRoomId);
+            subChat(params.chatRoomId);
+          }}
         />
-        <ChatRoomSlidePanel>
-          <ChatRoomList
-            ref={chatRoomListRef}
-            user={user}
-            chat={chatList[chatRoomId]}
-            chatRoom={chatRoomItem}
-            chatRoomList={chatRoomList}
-            handleTabChange={(params: any) => {
-              dispatch(setChatRoomItem(params));
-              getChat(params.chatRoomId);
-              subChat(params.chatRoomId);
-            }}
-          />
-          <ChatRoomInput chatRoomId={chatRoomId} user={user} />
-        </ChatRoomSlidePanel>
-      </View>
+        <ChatRoomInput chatRoomId={chatRoomId} user={user} />
+      </ChatRoomSlide>
     </View>
   );
 }
@@ -129,9 +128,6 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 16,
-  },
-  chatRoomContainer: {
-    flex: 1,
   },
   toggleHeader: {
     flexDirection: 'row',
