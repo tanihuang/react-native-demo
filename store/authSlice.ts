@@ -25,10 +25,6 @@ const authSlice = createSlice({
       return params;
     },
     clearUser: (state) => {
-      if (state.uuid) {
-        remove(ref(db, `${Default.users.users}/${state.uuid}`));
-        remove(ref(db, `${Default.users.usersCanvas}/${state.uuid}`));
-      }
       AsyncStorage.removeItem('auth');
       return initialState;
     },

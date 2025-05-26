@@ -10,6 +10,8 @@ const initialState = {
     chatRoomId: undefined as any,
   },
   chatList: {} as Record<string, any[]>,
+  chatRoomUnread: [] as string[],
+  chatUnread: 0,
 };
 
 const chatRoomSlice = createSlice({
@@ -57,7 +59,16 @@ const chatRoomSlice = createSlice({
         [chatRoomId]: [...existing, messages.filter(Boolean)],
       };
     },
-    clearChat: () => initialState,
+    setChatRoomUnread: (state, action) => {
+      state.chatRoomUnread = action.payload;
+    },
+    removeChatRoomUnread: (state, action) => {
+      state.chatRoomUnread = state.chatRoomUnread.filter((item: any) => item !== action.payload);
+    },
+    setChatUnread: (state, action) => {
+      state.chatUnread = action.payload;
+    },
+    setInitial: () => initialState,
   },
 });
 
@@ -69,6 +80,9 @@ export const {
   setChatRoomItem,
   setChatList,
   setUpdateChatList,
-  clearChat,
+  setChatRoomUnread,
+  removeChatRoomUnread,
+  setChatUnread,
+  setInitial,
 } = chatRoomSlice.actions;
 export default chatRoomSlice.reducer;

@@ -15,14 +15,16 @@ import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { db } from '@/services/firebaseConfig';
 import { ref, set } from 'firebase/database';
+import { Default } from '@/constants/ChatRoom';
 
 export default function ChatRoomInput(props: any) {
-  const { user, chatRoomId } = props;
+  const { user, chatRoomItem } = props;
+  const { chatRoomId, members, group } = chatRoomItem;
   const [form, setForm] = useState({
     content: '',
   });
   const [isFocused, setIsFocused] = useState(false);
-  const { createChat, getChat, getChatRoomList } = useChatRoom();
+  const { createChat, getChat, getChatRoomList, getChatUnread } = useChatRoom();
 
   const handleInputChange = async (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -35,10 +37,9 @@ export default function ChatRoomInput(props: any) {
       return;
     }
 
-    await createChat(chatRoomId, content, user);
+    await createChat(chatRoomId, content, group);
+    await getChatUnread(chatRoomId, members, group);
     await getChat(chatRoomId);
-    await set(ref(db, `chatRooms/private/${chatRoomId}/lastMessage`), content);
-    await set(ref(db, `chatRooms/private/${chatRoomId}/lastMessageTimestamp`), Date.now());
     setForm((prev: any) => ({ ...prev, content: '' }));
   };
 

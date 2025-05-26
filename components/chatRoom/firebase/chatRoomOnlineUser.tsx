@@ -66,7 +66,7 @@ export default function ChatRoomOnlineUser(props: any) {
       {visible && (
         <View style={styles.onlineUserContainer}>
           <FlatList
-            data={onlineUser.filter((item: any) => item.uuid !== user.uuid)}
+            data={onlineUser}
             keyExtractor={(item) => item.uuid}
             ListEmptyComponent={<Text style={styles.noUser}>無其他在線用戶</Text>}
             renderItem={({ item }) => (

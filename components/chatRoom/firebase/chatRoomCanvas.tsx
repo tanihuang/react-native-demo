@@ -21,11 +21,10 @@ function getCharacter(uuid: string): string {
 
 export default function ChatRoomCanvas({ user, chat }: any) {
   const [positions, setPositions] = useState<Record<string, any>>({});
-  const usersCanvas = Default.users.usersCanvas;
-  const userRef = ref(db, `${usersCanvas}/${user.uuid}`);
+  const userRef = ref(db, `${Default.users.usersCanvas}/${user.uuid}`);
 
   useEffect(() => {
-    const posRef = ref(db, usersCanvas);
+    const posRef = ref(db, Default.users.usersCanvas);
     onValue(posRef, (snapshot) => {
       setPositions(snapshot.val() || {});
     });

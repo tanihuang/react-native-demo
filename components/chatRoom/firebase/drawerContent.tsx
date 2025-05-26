@@ -3,17 +3,14 @@ import { View, TextInput, StyleSheet, TouchableOpacity, Text, FlatList } from 'r
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { toChatRoomName, toChatRoomListDate } from '@/utils/utils';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  setChatRoomStatus,
-  setChatRoomItem,
-  clearChat,
-} from '@/store/chatRoom/firebase/chatRoomSlice';
+import { setChatRoomItem, removeChatRoomUnread } from '@/store/chatRoom/firebase/chatRoomSlice';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 
 const DrawerContent = forwardRef((props: any, ref) => {
   const dispatch = useDispatch();
-  const { navigation, chatRoomList, chatRoom, user, handleTabChange } = props;
-    const { createChatRoom, getChatRoomList, getChat, subChat } = useChatRoom();
+  const { chatRoomUnread, chatUnread } = useSelector((state: any) => state.chatRoomFirebase);
+  const { navigation, user, chatRoom, chatRoomList } = props;
+  const { getChat, clearChatUnread, clearChatRoomUnread } = useChatRoom();
 
   useImperativeHandle(ref, () => ({
     handleOnPress,
@@ -32,8 +29,10 @@ const DrawerContent = forwardRef((props: any, ref) => {
     navigation.navigate(param.chatRoomId);
     dispatch(setChatRoomItem(param));
     getChat(param.chatRoomId);
-    subChat(param.chatRoomId);
     // navigation.navigate(params.chatRoomId, { chatRoomName: params.chatRoomName });
+
+    clearChatRoomUnread(param.chatRoomId);
+    clearChatUnread(param.chatRoomId);
   };
 
   const renderItem = ({ item }: any) => {
@@ -60,6 +59,11 @@ const DrawerContent = forwardRef((props: any, ref) => {
           <Text style={styles.chatContent}>{lastMessage}</Text>
           <Text style={styles.chatTimestamp}>{lastMessageTimestamp}</Text>
         </View>
+        {chatUnread[item.chatRoomId] > 0 && (
+          <View style={styles.chatUnread}>
+            <Text style={styles.chatUnreadText}>{chatUnread[item.chatRoomId]}</Text>
+          </View>
+        )}
       </TouchableOpacity>
     )
   };
@@ -111,6 +115,7 @@ const styles = StyleSheet.create({
     height: 66,
     borderRadius: 16,
     justifyContent: 'center',
+    position: 'relative',
   },
   chatInfo: {
     flexDirection: "row",
@@ -133,7 +138,23 @@ const styles = StyleSheet.create({
     color: "#fff",
     paddingVertical: 3,
   },
+  chatUnread: {
+    position: 'absolute',
+    top: 11.5,
+    right: 10,
+    width: 15,
+    height: 15,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    borderRadius: 10,
+  },
+  chatUnreadText: {
+    color: '#fff',
+    fontSize: 8,
+  },
   isActive: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  }
+  }, 
 });

@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import { View, StyleSheet, Dimensions, Platform, Text } from 'react-native';
+import { View, StyleSheet, Dimensions, Platform, Text, TouchableOpacity } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ChatRoomScreen from './chatRoomScreen';
 import DrawerContent from './drawerContent';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { toChatRoomName, toChatRoomListDate } from '@/utils/utils';
 import { drawerContentRef } from '@/constants/Ref';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { setChatRoomItem } from '@/store/chatRoom/firebase/chatRoomSlice';
+import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 
 const Stack = createNativeStackNavigator();
 const { width } = Dimensions.get('window');
@@ -14,9 +17,11 @@ const Drawer = createDrawerNavigator();
 const isWeb = Platform.OS === 'web';
 
 const ChatRoomList = forwardRef((props: any, ref) => {
+  const dispatch = useDispatch();
   const { chatRoom, chatRoomList, handleTabChange } = props;
   const { chatList, chatRoomItem } = useSelector((state: any) => state.chatRoomFirebase);
   const user = useSelector((state: any) => state.user);
+  const { getPublicPath } = useChatRoom();
 
   // useImperativeHandle(ref, () => ({
   //   handleOnPress: (chatRoomId: string) => {
@@ -56,35 +61,49 @@ const ChatRoomList = forwardRef((props: any, ref) => {
               {...props}
               ref={drawerContentRef}
               user={user}
-              chatRoomList={chatRoomList} 
               chatRoom={chatRoom}
+              chatList={chatList}
+              chatRoomList={chatRoomList} 
               handleTabChange={handleTabChange}
             />
           )}
         </Stack.Screen>
-        {chatRoomList.map((item: any) => {
-          const chatRoomName = toChatRoomName(item.members, user, item.chatRoomName, item.group);
-          return (
-            <Stack.Screen
-              key={item.chatRoomId}
-              name={item.chatRoomId}
-              options={({ route }) => ({
-                ...initialOptions,
-                title: chatRoomName,
-              })}
-            >
-              {() => (
-                <ChatRoomScreen
-                  {...item}
-                  user={user}
-                  chat={chatList[item.chatRoomId] || []}
-                  onMount={() => {
-                    handleTabChange?.(item);
-                  }}
-                />
-              )}
-            </Stack.Screen>
-          )
+        {chatRoomList
+          // .filter((item: any) => item.lastMessageTimestamp) 
+          .map((item: any) => {
+            const chatRoomName = toChatRoomName(item.members, user, item.chatRoomName, item.group);
+            return (
+              <Stack.Screen
+                key={item.chatRoomId}
+                name={item.chatRoomId}
+                options={({ route, navigation }) => ({
+                  ...initialOptions,
+                  title: chatRoomName,
+                  headerLeft: () => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.goBack();
+                        dispatch(setChatRoomItem(getPublicPath));
+                      }}
+                      style={{ paddingHorizontal: 10 }}
+                    >
+                      <FontAwesome name="angle-left" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  ),
+                })}
+              >
+                {() => (
+                  <ChatRoomScreen
+                    {...item}
+                    user={user}
+                    chat={chatList[item.chatRoomId] || []}
+                    onMount={() => {
+                      handleTabChange?.(item);
+                    }}
+                  />
+                )}
+              </Stack.Screen>
+            )
         })}
       </Stack.Navigator>
       {/* <Drawer.Navigator

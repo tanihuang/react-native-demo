@@ -21,8 +21,10 @@ export function Header({ navigation }: any) {
     dispatch(clearUser());
     dispatch(clearSearch());
     setDropdowVisible(false);
+
     showAlert('Logout successful!');
     router.push("/");
+  
   };
   const [dropdowVisible, setDropdowVisible] = useState(false);
 
