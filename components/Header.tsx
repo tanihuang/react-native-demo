@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, Pressable, FlatList, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import ChatRoomSearch from '@/components/chatRoom/socket/chatRoomSearch';
@@ -16,6 +16,36 @@ export function Header({ navigation }: any) {
   const user = useSelector((state: any) => state.user);
   const router = useRouter();
   const dispatch = useDispatch();
+  const [dropdowVisible, setDropdowVisible] = useState(false);
+  const timer = useRef<NodeJS.Timeout | null>(null);
+
+  const resetTimer = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      dispatch(clearUser());
+      dispatch(clearSearch());
+      setDropdowVisible(false);
+      router.push("/");
+    }, 60 * 60 * 1000);
+  };
+ 
+  useEffect(() => {
+    resetTimer();
+  
+    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+    const handleActivity = (e: Event) => resetTimer();
+  
+    events.forEach(event => {
+      window.addEventListener(event, handleActivity);
+    });
+  
+    return () => {
+      events.forEach(event => {
+        window.removeEventListener(event, handleActivity);
+      });
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, []);
 
   const handleLogout = async () => {
     dispatch(clearUser());
@@ -26,11 +56,11 @@ export function Header({ navigation }: any) {
     router.push("/");
   
   };
-  const [dropdowVisible, setDropdowVisible] = useState(false);
 
   const renderFlatList: any[] = [ 
     { id: 'Exit', label: 'Exit', action: handleLogout },
   ];
+
   return (
     <View
       style={[

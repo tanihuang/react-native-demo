@@ -27,7 +27,6 @@ export default function ChatRoom() {
     clearListener
   } = useChatRoom();
   const chatRoomListRef = useRef<any>(null);
-  const { chatRoomId } = chatRoomItem;
 
   useEffect(() => {
     if (user.isLogged) {

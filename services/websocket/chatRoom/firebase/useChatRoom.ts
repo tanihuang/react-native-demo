@@ -2,7 +2,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ref, push, set, onValue, onDisconnect, onChildAdded, get, off, update, remove } from 'firebase/database';
 import { db } from '@/services/firebaseConfig';
 import { updateMembersThunk } from '@/store/chatRoom/firebase/chatRoomThunk';
-import { setOnlineUser, setChatRoomList, setChatList, setUpdateChatList, setChatUnread, removeChatRoomUnread } from '@/store/chatRoom/firebase/chatRoomSlice';
+import { 
+  setOnlineUser, 
+  setChatRoomList, 
+  setChatList, 
+  setUpdateChatList, 
+  setChatUnread, 
+  removeChatRoomUnread, 
+  setInitial 
+} from '@/store/chatRoom/firebase/chatRoomSlice';
 import { Default } from '@/constants/ChatRoom';
 
 export default function useChatRoom() {
