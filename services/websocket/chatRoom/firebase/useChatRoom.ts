@@ -49,7 +49,8 @@ export default function useChatRoom() {
     onValue(onlineRef, (snapshot) => {
       const data = snapshot.val() || {};
       setTimeout(() => {
-        dispatch(setOnlineUser(Object.values(data).filter((item: any) => item.uuid !== user.uuid)));
+        // dispatch(setOnlineUser(Object.values(data).filter((item: any) => item.uuid !== user.uuid)));
+        dispatch(setOnlineUser(Object.values(data)));
       }, 0);
     });
   };

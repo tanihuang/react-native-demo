@@ -29,17 +29,6 @@ export default function TabLayout() {
         tabBarButton: () => null,
       },
     },
-    {
-      name: 'chatRoom',
-      options: {
-        title: 'Chat Room',
-        tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
-          <TabBarIcon name={focused ? 'chatbubble-ellipses-outline' : 'chatbubble-ellipses-outline'} color={color} />
-        ),
-        // tabBarButton: user.isLogged ? undefined : () => null, 
-        tabBarButton: () => null,
-      },
-    },
   ];
 
   return (

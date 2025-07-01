@@ -1,22 +1,29 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { View, StyleSheet, TouchableOpacity, Animated, Dimensions, Platform } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import ChatRoomOnlineUser from './chatRoomOnlineUser';
 import ChatRoomCanvas from './chatRoomCanvas';
-import { setChatRoomUnread } from '@/store/chatRoom/firebase/chatRoomSlice';
+import { setChatRoomItem, setInitial, setChatRoomUnread } from '@/store/chatRoom/firebase/chatRoomSlice';
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
+import ChatRoomList from './chatRoomList';
+import ChatRoomInput from './chatRoomInput';
+import AiModules from '@/components/aiModules';
 
 const screenWidth = Dimensions.get('window').width;
 
-export default function ChatRoomSlide( props: any) {
+export default function ChatRoomSlide(props: any) {
   const dispatch = useDispatch();
   const { user, chat, chatRoomList, children } = props;
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [prevChatRoomList, setPrevChatRoomList] = useState<any[]>([]);
   const translateX = useState(new Animated.Value(screenWidth))[0];
   const { onlineUser, chatRoomItem, chatRoomUnread } = useSelector((state: any) => state.chatRoomFirebase);
-    const { getChat, subChat, clearChatUnread, clearChatRoomUnread } = useChatRoom();
+  const { getChat, subChat, clearChatUnread } = useChatRoom();
+
+  useEffect(() => {
+    translateX.setValue(screenWidth); // 初始化動畫位置
+  }, []);
 
   useEffect(() => {
     const getChatRoomUnread = chatRoomList
@@ -31,6 +38,7 @@ export default function ChatRoomSlide( props: any) {
     if (getChatRoomUnread.length > 0) {
       dispatch(setChatRoomUnread(getChatRoomUnread));
     }
+
     clearChatUnread(chatRoomItem.chatRoomId);
     setPrevChatRoomList(chatRoomList);
   }, [chatRoomList]);
@@ -56,53 +64,88 @@ export default function ChatRoomSlide( props: any) {
     });
   };
 
+  const renderTabButton = (
+    key: string,
+    icon: React.ReactNode,
+    showIndicator: boolean,
+    indicatorStyle: object
+  ) => (
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={() => handleOnPress(key)}
+      style={[
+        styles.button,
+        activeKey === key && styles.buttonActive,
+      ]}
+    >
+      {icon}
+      {showIndicator && <View style={indicatorStyle} />}
+    </TouchableOpacity>
+  );
+
+  const renderPanelContent = () => {
+    switch (activeKey) {
+      case 'user':
+        return <ChatRoomOnlineUser handleTogglePanel={() => handleOnPress('chat')} />;
+      case 'chat':
+        return (
+          <View style={{ flex: 1 }}>
+            <ChatRoomList
+              user={user}
+              chatRoom={chatRoomItem}
+              chatRoomList={chatRoomList}
+              handleTabChange={(params: any) => {
+                dispatch(setChatRoomItem(params));
+                getChat(params.chatRoomId);
+                subChat(params.chatRoomId);
+              }}
+            />
+            <ChatRoomInput user={user} chatRoomItem={chatRoomItem} />
+          </View>
+        );
+      case 'tools':
+        return <AiModules />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-      <View style={[styles.canvasWrapper, activeKey ? { marginRight: 2.5 } : null]}>
-        <ChatRoomCanvas user={user} chat={chat || []} />
-      </View>
-        <Animated.View 
+        <View style={[styles.canvasWrapper, activeKey ? { marginRight: 2.5 } : null]}>
+          <ChatRoomCanvas user={user} chat={chat || []} />
+        </View>
+        <Animated.View
           style={[
             styles.animatedWrapper,
             activeKey ? { marginLeft: 2.5, width: 350 } : { width: 0 },
-            { transform: [{ translateX }] }
+            { transform: [{ translateX }] },
           ]}
         >
-          <View style={styles.borderContainer}>
-            {activeKey === 'user' && <ChatRoomOnlineUser handleTogglePanel={() => handleOnPress('chat')}/>}
-            {activeKey === 'chat' && children}
-          </View>
+          <View style={styles.borderContainer}>{renderPanelContent()}</View>
         </Animated.View>
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity 
-          activeOpacity={1}
-          onPress={() => handleOnPress('chat')}
-          style={[
-            styles.button,
-            activeKey === 'chat' && styles.buttonActive,
-          ]}
-        >
-          <Ionicons name="chatbox-ellipses" size={15} color="#fff" />
-          {chatRoomUnread.length > 0 && (
-            <View style={styles.buttonUnread} />
-          )}
-        </TouchableOpacity>
-        <TouchableOpacity 
-          activeOpacity={1}
-          onPress={() => handleOnPress('user')}
-          style={[
-            styles.button,
-            activeKey === 'user' && styles.buttonActive,
-          ]}
-        >
-          <FontAwesome5 name="user-friends" size={14} color="white" />
-          {onlineUser.length > 0 && (
-            <View style={styles.buttonOnline} />
-          )}
-        </TouchableOpacity>
+        {renderTabButton(
+          'tools',
+          <FontAwesome5 name="robot" size={14} color="white" />,
+          false,
+          {}
+        )}
+        {renderTabButton(
+          'chat',
+          <Ionicons name="chatbox-ellipses" size={15} color="#fff" />,
+          chatRoomUnread.length > 0,
+          styles.buttonUnread
+        )}
+        {renderTabButton(
+          'user',
+          <FontAwesome5 name="user-friends" size={14} color="white" />,
+          onlineUser.length > 0,
+          styles.buttonOnline
+        )}
       </View>
     </View>
   );
@@ -120,9 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonContainer: {
-    display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'flex-end',
     paddingVertical: 8,
     paddingHorizontal: 10,

@@ -60,20 +60,7 @@ export default function ChatRoom() {
         user={user}
         chat={chatList[getPublicPath.chatRoomId]}
         chatRoomList={chatRoomList}
-      >
-        <ChatRoomList
-          ref={chatRoomListRef}
-          user={user}
-          chatRoom={chatRoomItem}
-          chatRoomList={chatRoomList}
-          handleTabChange={(params: any) => {
-            dispatch(setChatRoomItem(params));
-            getChat(params.chatRoomId);
-            subChat(params.chatRoomId);
-          }}
-        />
-        <ChatRoomInput user={user} chatRoomItem={chatRoomItem} />
-      </ChatRoomSlide>
+      />
     </View>
   );
 }

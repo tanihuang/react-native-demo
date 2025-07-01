@@ -69,11 +69,20 @@ export default function ChatRoomOnlineUser(props: any) {
             data={onlineUser}
             keyExtractor={(item) => item.uuid}
             ListEmptyComponent={<Text style={styles.noUser}>無其他在線用戶</Text>}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.item} onPress={() => handleOnPress(item)}>
-                <Text style={styles.username}>{item.username}</Text>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item }) => {
+              const isSelf = item.uuid === user.uuid;
+              return (
+                <TouchableOpacity
+                  onPress={() => !isSelf && handleOnPress(item)}
+                  disabled={isSelf}
+                >
+                  <View style={styles.userRow}>
+                    <View style={styles.greenDot} />
+                    <Text style={styles.username}>{item.username}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
       )}
@@ -128,5 +137,16 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     color: '#fff',
+  },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  greenDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#4CAF50',
+    marginRight: 8,
   },
 });
