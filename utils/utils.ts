@@ -1,5 +1,6 @@
 import moment from 'moment';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Image, Platform, Linking } from 'react-native';
 
 export const toRemoveUser = (data: any[], user: any) => {
   if (Array.isArray(user)) {
@@ -75,4 +76,29 @@ export async function apiRequest<T>(
       message: Array.isArray(msg) ? msg.join(' ') : msg || error.message,
     };
   }
+}
+
+export function openBlank(url: string) {
+  if (Platform.OS === 'web') {
+    window.open(url, '_blank');
+  } else {
+    Linking.openURL(url);
+  }
+}
+
+export async function getImageSize(uri: string): Promise<{ width: number; height: number } | null> {
+  return new Promise((resolve) => {
+    if (Platform.OS === 'web') {
+      const img = new window.Image();
+      img.onload = () => resolve({ width: img.width, height: img.height });
+      img.onerror = () => resolve(null);
+      img.src = uri;
+    } else {
+      Image.getSize(
+        uri,
+        (width, height) => resolve({ width, height }),
+        () => resolve(null)
+      );
+    }
+  });
 }

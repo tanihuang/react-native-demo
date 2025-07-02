@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
   userRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 8,
   },
   greenDot: {
     width: 8,

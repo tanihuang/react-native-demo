@@ -29,19 +29,6 @@ export default function Login() {
   const user = useSelector((state: any) => state.user);
   const router = useRouter();
 
-  useEffect(() => {
-    const handleInitParam = async () => {
-      const json = await AsyncStorage.getItem('auth');
-      if (json) {
-        const user = JSON.parse(json);
-        if (user && user.isLogged) {
-          router.push('/chatRoom');
-        }
-      }
-    };
-    handleInitParam();
-  }, [user.isLogged, router]);
-
   const handleInputChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };

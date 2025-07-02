@@ -8,7 +8,7 @@ import { setChatRoomItem, setInitial, setChatRoomUnread } from '@/store/chatRoom
 import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import ChatRoomList from './chatRoomList';
 import ChatRoomInput from './chatRoomInput';
-import AiModules from '@/components/aiModules';
+import Ai from '@/components/ai';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -103,8 +103,8 @@ export default function ChatRoomSlide(props: any) {
             <ChatRoomInput user={user} chatRoomItem={chatRoomItem} />
           </View>
         );
-      case 'tools':
-        return <AiModules />;
+      case 'ai':
+        return <Ai />;
       default:
         return null;
     }
@@ -129,7 +129,7 @@ export default function ChatRoomSlide(props: any) {
 
       <View style={styles.buttonContainer}>
         {renderTabButton(
-          'tools',
+          'ai',
           <FontAwesome5 name="robot" size={14} color="white" />,
           false,
           {}

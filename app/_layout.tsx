@@ -21,24 +21,6 @@ export default function RootLayout() {
   const router = useRouter();
   const searchVisible = store.getState().chatRoomSocket.searchVisible;
 
-
-  // useEffect(() => {
-  //   if (loaded) {
-  //     SplashScreen.hideAsync();
-  //   }
-  // }, [loaded]);
-
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync();
-      router.replace('/(tabs)');
-    }
-  }, [fontsLoaded, router]);
-
-  if (!fontsLoaded) {
-    return null;
-  }
-
   const handleFeedback = (e: any) => {
     const target = e.target;
 

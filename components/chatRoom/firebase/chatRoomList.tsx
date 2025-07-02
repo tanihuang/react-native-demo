@@ -48,9 +48,9 @@ const ChatRoomList = forwardRef((props: any, ref) => {
 
   return (
     <View style={styles.container}>
-      <Stack.Navigator initialRouteName="ChatRoomList">
+      <Stack.Navigator initialRouteName="chat">
         <Stack.Screen
-          name="ChatRoomList"
+          name="chat"
           options={{
             ...initialOptions,
             title: '聊天室列表',
