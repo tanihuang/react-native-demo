@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  ScrollView,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { Ai } from '@/constants/Ai';
 import { Ionicons } from '@expo/vector-icons';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function AiPlatformPage() {
   const [activeModule, setActiveModule] = useState(Ai[0]);
@@ -32,19 +39,25 @@ export default function AiPlatformPage() {
         ))}
       </View>
 
-      {/* 下方模組內容 */}
-      <View style={styles.content}>
-        <ActiveComponent />
-      </View>
+      {/* ✅ 只有內容可以滾動 */}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.content}>
+          <ActiveComponent />
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingHorizontal: 16,
     backgroundColor: 'rgb(32, 37, 64)',
-    minHeight: SCREEN_HEIGHT,
   },
   title: {
     fontSize: 18,

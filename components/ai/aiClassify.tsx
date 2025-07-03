@@ -15,6 +15,8 @@ import axios from 'axios';
 import { getMimeType } from '@/utils/mime';
 import { getImageSize } from '@/utils/utils';
 import ImageModal from '@/components/modals/ImageModal';
+import { AiClassify as LABEL_MAP } from '@/constants/AiClassify';
+import { isMobile, isWeb } from '@/utils/utils';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -32,6 +34,31 @@ export default function AiClassify() {
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      for (const asset of result.assets) {
+        let uri = asset.uri;
+
+        const compressed = await ImageManipulator.manipulateAsync(
+          uri,
+          [{ resize: { width: 1024 } }],
+          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+        );
+
+        uri = compressed.uri;
+        const item = await sendImageToApi(uri);
+        if (item) {
+          setUploads((prev) => [...prev, item]);
+        }
+      }
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
     });
 
@@ -73,9 +100,7 @@ export default function AiClassify() {
       }
 
       const res = await axios.post('http://localhost:8000/ai/classify', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       const json = res.data;
@@ -125,10 +150,12 @@ export default function AiClassify() {
                       height: (y2 - y1) * scale,
                     };
 
+                    const labelZh = LABEL_MAP[result.label] || result.label;
+
                     return (
                       <View key={idx} style={[styles.box, boxStyle]}>
                         <Text style={styles.label}>
-                          {result.label} ({(result.confidence * 100).toFixed(1)}%)
+                          {labelZh} ({(result.confidence * 100).toFixed(1)}%)
                         </Text>
                       </View>
                     );
@@ -143,17 +170,25 @@ export default function AiClassify() {
         })}
       </ScrollView>
 
-      <TouchableOpacity style={styles.uploadButton} onPress={handlePickImage}>
-        <Text style={styles.uploadButtonText}>上傳產品影像</Text>
-      </TouchableOpacity>
+      {isWeb && (
+        <TouchableOpacity style={styles.uploadButton} onPress={handlePickImage}>
+          <Text style={styles.uploadButtonText}>從圖庫選擇</Text>
+        </TouchableOpacity>
+      )}
 
-      {/* Modal 放大圖 */}
+      {isMobile && (
+         <TouchableOpacity style={styles.uploadButton} onPress={handleTakePhoto}>
+          <Text style={styles.uploadButtonText}>使用相機拍照</Text>
+        </TouchableOpacity>
+      )}
+
       {selectedItem && (
         <ImageModal
           visible={true}
           imageUri={selectedItem.imageUri}
           imageSize={selectedItem.imageSize}
           results={selectedItem.results}
+          labelMap={LABEL_MAP} 
           onClose={() => setSelectedItem(null)}
         />
       )}
@@ -165,7 +200,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgb(32, 37, 64)',
-    padding: 16,
   },
   gallery: {
     flexDirection: 'row',
@@ -176,7 +210,7 @@ const styles = StyleSheet.create({
   thumbnail: {
     maxWidth: 250,
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   image: {
     width: '100%',
