@@ -102,3 +102,6 @@ export async function getImageSize(uri: string): Promise<{ width: number; height
     }
   });
 }
+
+export const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
+export const isWeb = Platform.OS === 'web';

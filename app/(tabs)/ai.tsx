@@ -14,15 +14,14 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function AiPlatformPage() {
   const [activeModule, setActiveModule] = useState(Ai[0]);
-  const ActiveComponent = activeModule.component;
 
   return (
     <View style={styles.container}>
-      {/* 上方模組介紹區 */}
+      {/* Info */}
       <Text style={styles.title}>{activeModule.title}</Text>
       <Text style={styles.description}>{activeModule.description}</Text>
 
-      {/* Tab 切換列 */}
+      {/* Tabs */}
       <View style={styles.tabRow}>
         {Ai.map((item: any) => (
           <TouchableOpacity
@@ -39,16 +38,17 @@ export default function AiPlatformPage() {
         ))}
       </View>
 
-      {/* ✅ 只有內容可以滾動 */}
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.content}>
-          <ActiveComponent />
-        </View>
-      </ScrollView>
+      {/* Panel */}
+      <View style={styles.tabContainer}>
+        {Ai.map((item: any) => (
+          <View
+            key={item.key}
+            style={{ flex: 1, display: activeModule.key === item.key ? 'flex' : 'none' }}
+          >
+            <item.component />
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingBottom: 16,
     backgroundColor: 'rgb(32, 37, 64)',
   },
   title: {
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 16,
   },
   tabButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -98,7 +98,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
   },
-  content: {
-    borderRadius: 16,
+  tabContainer: {
+    flex: 1,
+    marginTop: 16,
   },
 });

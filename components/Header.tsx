@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     paddingVertical: 15,
-    paddingHorizontal: 10,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
