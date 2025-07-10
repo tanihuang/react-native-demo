@@ -20,6 +20,7 @@ export type UploadItem = {
 };
 
 type Props = {
+  modeKey: string;
   uploads: UploadItem[];
   onDelete?: (id: number) => void;
   children?: React.ReactNode;
@@ -27,12 +28,12 @@ type Props = {
 };
 
 export default function AiResultViewer({
+  modeKey,
   uploads,
   onDelete,
   children,
   isBoxMode = true,
 }: Props) {
-  console.log('uploads: ', uploads);
   const [selectedItem, setSelectedItem] = useState<UploadItem | null>(null);
 
   return (

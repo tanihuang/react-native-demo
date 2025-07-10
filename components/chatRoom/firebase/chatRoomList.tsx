@@ -54,6 +54,7 @@ const ChatRoomList = forwardRef((props: any, ref) => {
           options={{
             ...initialOptions,
             title: '聊天室列表',
+            headerLeft: () => null,
           }}
         >
           {(props) => (

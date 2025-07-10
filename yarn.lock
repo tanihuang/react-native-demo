@@ -6844,6 +6844,11 @@ expo-constants@~17.0.5, expo-constants@~17.0.7:
     "@expo/config" "~10.0.10"
     "@expo/env" "~0.4.2"
 
+expo-document-picker@^13.1.6:
+  version "13.1.6"
+  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-13.1.6.tgz#d31a14eac7f0d44f6d1eee8d41403499ce07924d"
+  integrity sha512-8FTQPDOkyCvFN/i4xyqzH7ELW4AsB6B3XBZQjn1FEdqpozo6rpNJRr7sWFU/93WrLgA9FJEKpKbyr6XxczK6BA==
+
 expo-file-system@~18.0.11:
   version "18.0.11"
   resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-18.0.11.tgz#4e602d6d0a3928810b98666ab11872fafe411170"

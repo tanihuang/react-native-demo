@@ -9,6 +9,7 @@ import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import ChatRoomList from './chatRoomList';
 import ChatRoomInput from './chatRoomInput';
 import Ai from '@/components/ai';
+import { openBlank } from '@/utils/utils';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -65,14 +66,17 @@ export default function ChatRoomSlide(props: any) {
   };
 
   const renderTabButton = (
-    key: string,
-    icon: React.ReactNode,
-    showIndicator: boolean,
-    indicatorStyle: object
-  ) => (
+  key: string,
+  icon: React.ReactNode,
+  showIndicator: boolean,
+  indicatorStyle: object
+) => {
+  const handlePress = key === 'ai' ? () => openBlank('/ai') : () => handleOnPress(key);
+
+  return (
     <TouchableOpacity
       activeOpacity={1}
-      onPress={() => handleOnPress(key)}
+      onPress={handlePress}
       style={[
         styles.button,
         activeKey === key && styles.buttonActive,
@@ -82,6 +86,7 @@ export default function ChatRoomSlide(props: any) {
       {showIndicator && <View style={indicatorStyle} />}
     </TouchableOpacity>
   );
+};
 
   const renderPanelContent = () => {
     switch (activeKey) {
@@ -128,25 +133,30 @@ export default function ChatRoomSlide(props: any) {
       </View>
 
       <View style={styles.buttonContainer}>
-        {renderTabButton(
-          'ai',
-          <FontAwesome5 name="robot" size={14} color="white" />,
-          false,
-          {}
-        )}
-        {renderTabButton(
-          'chat',
-          <Ionicons name="chatbox-ellipses" size={15} color="#fff" />,
-          chatRoomUnread.length > 0,
-          styles.buttonUnread
-        )}
-        {renderTabButton(
-          'user',
-          <FontAwesome5 name="user-friends" size={14} color="white" />,
-          onlineUser.length > 0,
-          styles.buttonOnline
-        )}
+        <View style={styles.leftButtons}>
+          {renderTabButton(
+            'ai',
+            <FontAwesome5 name="robot" size={14} color="white" />,
+            false,
+            {}
+          )}
+        </View>
+        <View style={styles.rightButtons}>
+          {renderTabButton(
+            'chat',
+            <Ionicons name="chatbox-ellipses" size={15} color="#fff" />,
+            chatRoomUnread.length > 0,
+            styles.buttonUnread
+          )}
+          {renderTabButton(
+            'user',
+            <FontAwesome5 name="user-friends" size={14} color="white" />,
+            onlineUser.length > 0,
+            styles.buttonOnline
+          )}
+        </View>
       </View>
+
     </View>
   );
 }
@@ -166,7 +176,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 11,
     zIndex: 999,
   },
   button: {
@@ -209,5 +219,15 @@ const styles = StyleSheet.create({
     flex: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 1,
+  },
+  leftButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    flex: 1,
+  },
+  rightButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    flex: 1,
   },
 });

@@ -87,7 +87,7 @@ export default function ChatRoomInput(props: any) {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
+    margin: 8,
     position: 'relative'
   },
   textInput: {

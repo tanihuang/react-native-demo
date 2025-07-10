@@ -1,8 +1,8 @@
 import AiClassify from '@/components/ai/aiClassify';
-import AiMedicalImagingAid from '@/components/ai/aiMedicalImagingAid';
-import AiContractRiskAssistant from '@/components/ai/aiContractRiskAssistant';
-import AiStockAutoSummary from '@/components/ai/aiStockAutoSummary';
-import AiInteractiveAgent from '@/components/ai/aiInteractiveAgent';
+import AiMedical from '@/components/ai/aiMedical';
+import AiContract from '@/components/ai/aiContract';
+import AiStock from '@/components/ai/aiStock';
+import AiAgent from '@/components/ai/aiAgent';
 
 export const Ai = [
   {
@@ -21,7 +21,7 @@ export const Ai = [
       '上傳 X-ray 或 CT 圖片，自動辨識可疑區域（DEMO 資料）\nPyTorch + MONAI + Gradio/React\n展現醫療影像處理能力與責任感',
     icon: 'medkit-outline',
     path: '/ai',
-    component: AiMedicalImagingAid,
+    component: AiMedical,
   },
   {
     key: 'contract',
@@ -30,7 +30,7 @@ export const Ai = [
       '上傳合約檔，自動摘要並標記潛在風險段落，可追問\nLangChain + HuggingFace + FastAPI + React\n展現 NLP 技術與資料查詢 API 能力',
     icon: 'document-text-outline',
     path: '/ai',
-    component: AiContractRiskAssistant,
+    component: AiContract,
   },
   {
     key: 'stock',
@@ -39,7 +39,7 @@ export const Ai = [
       '每日自動分析股票技術指標，寄送報告或產出摘要 API\nFastAPI + SQLite + Scheduler + Gmail API\n展現資料抓取、自動化、指標計算與報表能力',
     icon: 'bar-chart-outline',
     path: '/ai',
-    component: AiStockAutoSummary,
+    component: AiStock,
   },
   {
     key: 'agent',
@@ -48,6 +48,6 @@ export const Ai = [
       '可鍵盤控制的互動角色，回答問題並根據語意變換表情\nLLM + WebSocket + Canvas/WebGL + GGUF\n展現 AI agent 技術、互動與即時性設計',
     icon: 'chatbubble-ellipses-outline',
     path: '/ai',
-    component: AiInteractiveAgent,
+    component: AiAgent,
   },
 ];

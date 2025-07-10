@@ -1,5 +1,5 @@
-export const getMimeType = (uri: string): string => {
-  const extension = uri.split('.').pop()?.toLowerCase();
+export const getMimeType = (url: string): string => {
+  const extension = url.split('.').pop()?.toLowerCase();
   const mimeTypes: { [key: string]: string } = {
     jpg: 'image/jpeg',
     jpeg: 'image/jpeg',

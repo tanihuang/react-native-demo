@@ -86,16 +86,16 @@ export function openBlank(url: string) {
   }
 }
 
-export async function getImageSize(uri: string): Promise<{ width: number; height: number } | null> {
+export async function getImageSize(url: string): Promise<{ width: number; height: number } | null> {
   return new Promise((resolve) => {
     if (Platform.OS === 'web') {
       const img = new window.Image();
       img.onload = () => resolve({ width: img.width, height: img.height });
       img.onerror = () => resolve(null);
-      img.src = uri;
+      img.src = url;
     } else {
       Image.getSize(
-        uri,
+        url,
         (width, height) => resolve({ width, height }),
         () => resolve(null)
       );

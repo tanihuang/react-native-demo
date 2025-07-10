@@ -10,12 +10,30 @@ const Stack = createNativeStackNavigator();
 
 function DrawerContent() {
   const [activeModule, setActiveModule] = useState(Ai [0]);
+  const [showBox, setShowBox] = useState(true);
   const navigation: any = useNavigation();
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>AI Demo</Text>
+      <View style={styles.infoBox}>
+        <View style={styles.infoHeader}>
+          <Text style={styles.infoTitle}>ℹ️ Please note</Text>
+          <TouchableOpacity onPress={() => setShowBox(false)}>
+            <Text style={styles.closeButton}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.infoText}>點擊「Demo」按鈕即可立即試用</Text>
+      </View>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => openBlank('/ai')}
+      >
+        <Text style={styles.buttonText}>Demo</Text>
+      </TouchableOpacity>
+
       {/* 上方模組展示區 */}
-      <View style={styles.panel}>
+      {/* <View style={styles.panel}>
         <Text style={styles.title}>{activeModule.title}</Text>
         <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: 20 }}>
           <Text style={styles.description}>{activeModule.description}</Text>
@@ -26,10 +44,10 @@ function DrawerContent() {
         >
           <Text style={styles.buttonText}>Demo</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* 下方模組清單 FlatList */}
-      <View>
+      {/* <View>
         <FlatList
           data={Ai}
           keyExtractor={(item) => item.key}
@@ -53,7 +71,7 @@ function DrawerContent() {
             );
           }}
         />
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -70,6 +88,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgb(32, 37, 64)',
+    padding: 8,
+    paddingTop: 0,
   },
   panel: {
     flex: 1,
@@ -83,6 +103,7 @@ const styles = StyleSheet.create({
     height: 64,
     display: 'flex',
     alignItems: 'center',
+    paddingHorizontal: 8,
   },
   scrollView: {
     flex: 1,
@@ -127,15 +148,43 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   button: {
-    marginTop: 12,
     backgroundColor: 'rgb(88, 130, 247)',
     paddingVertical: 10,
     borderRadius: 8,
+    marginTop: 'auto',
     alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
     fontSize: 15,
     fontWeight: 'bold',
+  },
+  infoBox: {
+    borderColor: 'rgb(84, 92, 143)',
+    borderWidth: 2,
+    borderRadius: 12,
+    padding: 12,
+  },
+  infoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  infoTitle: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+    lineHeight: 32,
+  },
+  closeButton: {
+    color: '#fff',
+    fontSize: 16,
+    paddingHorizontal: 4,
+  },
+  infoText: {
+    color: '#ccc',
+    fontSize: 13,
+    lineHeight: 18,
+    paddingVertical: 8,
   },
 });

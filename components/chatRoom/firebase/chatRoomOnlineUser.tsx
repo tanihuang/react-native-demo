@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     display: 'flex',
     marginLeft: 11,
+    fontWeight: 'bold',
   },
   number: {
     backgroundColor: 'rgba(84, 92, 143, 0.3)',

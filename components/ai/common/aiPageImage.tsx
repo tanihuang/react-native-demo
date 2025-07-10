@@ -27,7 +27,11 @@ type ModeItem = {
   label: string;
   description: string;
   endpoint: string;
-  component: React.FC<{ uploads: UploadItem[]; onDelete: (id: number) => void }>;
+   component: React.FC<{
+    uploads: UploadItem[];
+    onDelete: (id: number) => void;
+    modeKey: string;
+  }>;
   confidence: boolean;
   threshold: number;
 };
@@ -36,7 +40,7 @@ type Props = {
   config: Record<string, ModeItem>;
 };
 
-export default function AiPage({ config }: Props) {
+export default function AiPageImage({ config }: Props) {
   const firstKey = Object.keys(config)[0];
   const [mode, setMode] = useState<string>(firstKey);
   const [uploadsByMode, setUploadsByMode] = useState<Record<string, UploadItem[]>>({});
@@ -113,17 +117,14 @@ export default function AiPage({ config }: Props) {
           : json.data
         : [];
 
-      console.log('resultArray', resultArray);
-
       const imageSize = await getImageSize(compressedUri);
       if (!imageSize) return null;
 
       return {
         id: Date.now(),
-        imageUri: base64Uri,
+        imageUri: mode === 'medicalByMask' && resultArray ? resultArray[0].maskUrl : base64Uri,
         imageSize,
         results: resultArray,
-        maskUrl: json.maskUrl || undefined,
       };
     } catch (error: any) {
       console.error('Upload failed:', error?.response?.data || error.message);
@@ -157,6 +158,7 @@ export default function AiPage({ config }: Props) {
       {RenderedComponent && (
         <RenderedComponent
           key={mode}
+          modeKey={mode}
           uploads={uploadsByMode[mode] || []}
           onDelete={handleDelete}
         />

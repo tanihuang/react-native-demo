@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   LayoutChangeEvent,
+  ScrollView,
 } from 'react-native';
 
 type Props = {
@@ -42,35 +43,42 @@ const ImageModal = ({
       <View style={styles.modalOverlay}>
         <TouchableOpacity style={styles.background} onPress={onClose} />
 
-        <ImageBackground
-          source={{ uri: imageUri }}
-          style={[
-            styles.image,
-            { aspectRatio: imageSize.width / imageSize.height },
-          ]}
-          onLayout={onImageLayout}
-        >
-          {Array.isArray(results) && results.length > 0 &&
-            results.map((item, idx) => {
-              const labelZh = labelMap?.[item.label] || item.label;
-              if (!Array.isArray(item.box) || item.box.length !== 4) return null;
-              const [x1, y1, x2, y2] = item.box;
-              const boxStyle = {
-                left: x1 * scale,
-                top: y1 * scale,
-                width: (x2 - x1) * scale,
-                height: (y2 - y1) * scale,
-              };
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View
+            style={[styles.imageWrapper, { width: '90%' }]}
+            onLayout={onImageLayout}
+          >
+            <ImageBackground
+              source={{ uri: imageUri }}
+              style={{
+                width: '100%',
+                aspectRatio: imageSize.width / imageSize.height,
+              }}
+              resizeMode="contain"
+            >
+              {Array.isArray(results) &&
+                results.map((item, idx) => {
+                  const labelZh = labelMap?.[item.label] || item.label;
+                  if (!Array.isArray(item.box) || item.box.length !== 4) return null;
+                  const [x1, y1, x2, y2] = item.box;
+                  const boxStyle = {
+                    left: x1 * scale,
+                    top: y1 * scale,
+                    width: (x2 - x1) * scale,
+                    height: (y2 - y1) * scale,
+                  };
 
-              return (
-                <View key={idx} style={[styles.box, boxStyle]}>
-                  <Text style={styles.label}>
-                    {labelZh} ({(item.confidence * 100).toFixed(1)}%)
-                  </Text>
-                </View>
-              );
-            })}
-        </ImageBackground>
+                  return (
+                    <View key={idx} style={[styles.box, boxStyle]}>
+                      <Text style={styles.label}>
+                        {labelZh} ({(item.confidence * 100).toFixed(1)}%)
+                      </Text>
+                    </View>
+                  );
+                })}
+            </ImageBackground>
+          </View>
+        </ScrollView>
 
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
           <Text style={styles.closeText}>✕</Text>
@@ -86,16 +94,19 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.85)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   background: {
     ...StyleSheet.absoluteFillObject,
   },
-  image: {
-    width: '90%',
-    resizeMode: 'contain',
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  imageWrapper: {
     position: 'relative',
+    alignItems: 'center',
   },
   box: {
     position: 'absolute',
@@ -115,6 +126,7 @@ const styles = StyleSheet.create({
     top: 40,
     right: 30,
     padding: 10,
+    zIndex: 2,
   },
   closeText: {
     color: '#fff',
