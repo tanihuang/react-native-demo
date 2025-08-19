@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { View, StyleSheet, TouchableOpacity, Animated, Dimensions, Platform } from 'react-native';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import ChatRoomOnlineUser from './chatRoomOnlineUser';
 import ChatRoomCanvas from './chatRoomCanvas';
 import { setChatRoomItem, setInitial, setChatRoomUnread } from '@/store/chatRoom/firebase/chatRoomSlice';
@@ -9,6 +9,7 @@ import useChatRoom from '@/services/websocket/chatRoom/firebase/useChatRoom';
 import ChatRoomList from './chatRoomList';
 import ChatRoomInput from './chatRoomInput';
 import Ai from '@/components/ai';
+import Wallet from '@/components/wallet';
 import { openBlank } from '@/utils/utils';
 
 const screenWidth = Dimensions.get('window').width;
@@ -90,8 +91,8 @@ export default function ChatRoomSlide(props: any) {
 
   const renderPanelContent = () => {
     switch (activeKey) {
-      case 'user':
-        return <ChatRoomOnlineUser handleTogglePanel={() => handleOnPress('chat')} />;
+      case 'ai':
+        return <Ai />;
       case 'chat':
         return (
           <View style={{ flex: 1 }}>
@@ -108,8 +109,10 @@ export default function ChatRoomSlide(props: any) {
             <ChatRoomInput user={user} chatRoomItem={chatRoomItem} />
           </View>
         );
-      case 'ai':
-        return <Ai />;
+      case 'user':
+        return <ChatRoomOnlineUser handleTogglePanel={() => handleOnPress('chat')} />;
+      case 'wallet':
+        return <Wallet />;
       default:
         return null;
     }
@@ -153,6 +156,12 @@ export default function ChatRoomSlide(props: any) {
             <FontAwesome5 name="user-friends" size={14} color="white" />,
             onlineUser.length > 0,
             styles.buttonOnline
+          )}
+          {renderTabButton(
+            'wallet',
+            <Ionicons name="wallet" size={15} color="#fff" />,
+            false,
+            {}
           )}
         </View>
       </View>

@@ -48,7 +48,7 @@ export default function ChatRoomOnlineUser(props: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <View>
       <TouchableOpacity onPress={() => setVisible(!visible)} activeOpacity={1}>
         <View style={styles.buttonContent}>
           <FontAwesome
@@ -56,7 +56,7 @@ export default function ChatRoomOnlineUser(props: any) {
             size={24} 
             color="#fff" 
           />
-          <Text style={styles.button}>在線用戶</Text>
+          <Text style={styles.button}>Online Users</Text>
           {(onlineUser.length - 1) > 0 && (
             <Text style={styles.number}>{onlineUser.length - 1}</Text>
           )}
@@ -68,7 +68,7 @@ export default function ChatRoomOnlineUser(props: any) {
           <FlatList
             data={onlineUser}
             keyExtractor={(item) => item.uuid}
-            ListEmptyComponent={<Text style={styles.noUser}>無其他在線用戶</Text>}
+            ListEmptyComponent={<Text style={styles.noUser}>No users online</Text>}
             renderItem={({ item }) => {
               const isSelf = item.uuid === user.uuid;
               return (
@@ -92,8 +92,6 @@ export default function ChatRoomOnlineUser(props: any) {
 
 
 const styles = StyleSheet.create({
-  container: {
-  },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',

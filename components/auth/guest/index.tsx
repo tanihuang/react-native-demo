@@ -70,19 +70,20 @@ export default function Login() {
         <TextInput
           value={form.username}
           onChangeText={(value) => handleInputChange('username', value)}
-          placeholder='nickname'
+          placeholder=''
+          placeholderTextColor="#fff6"
           style={styles.textInput}
           clearButtonMode='always'
         />
-        <Pressable
+        <TouchableOpacity
           style={styles.submitButton}
           onPress={() => {
-            setSubmit(true)
+            setSubmit(true);
             handleJoin();
           }}
         >
           <Text style={styles.submitButtonText}>JOIN</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </View>
   );

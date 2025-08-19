@@ -1,7 +1,8 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
-import { getAnalytics } from 'firebase/analytics';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 import Constants from 'expo-constants';
+import Default from '@/constants/Default';
 
 const extra: any = Constants.expoConfig?.extra;
 
@@ -17,7 +18,14 @@ const firebaseConfig = {
 };
 
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-const analytics = getAnalytics(app);
+let analytics: ReturnType<typeof getAnalytics> | null = null;
+
+isSupported().then((supported) => {
+  if (supported) {
+    analytics = getAnalytics(app);
+  }
+});
+
 const db = getDatabase(app);
 
 export { db, analytics };

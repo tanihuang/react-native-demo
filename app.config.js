@@ -1,5 +1,7 @@
 import 'dotenv/config';
 
+const isExt = process.env.EXPO_PLATFORM === 'ext';
+
 export default {
   expo: {
     name: 'react-native-demo',
@@ -27,7 +29,7 @@ export default {
       bundler: 'metro',
       output: 'static',
       favicon: './assets/images/favicon.png',
-      publicPath: '/react-native-demo/'
+      publicPath: isExt ? './' : '/react-native-demo/'
     },
     plugins: ['expo-router'],
     experiments: {

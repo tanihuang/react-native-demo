@@ -82,7 +82,7 @@ export default function AiPageImage({ config }: Props) {
 
     try {
       const { endpoint, confidence, threshold } = config[mode];
-      const res = await axios.post(`http://localhost:8000${endpoint}`, formData, {
+      const res = await axios.post(`http://18.183.223.72:8000${endpoint}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -117,7 +117,7 @@ export default function AiPageImage({ config }: Props) {
       }));
 
       if (newChatId) {
-        const summaryRes = await axios.get(`http://localhost:8000/ai/contract/${newChatId}/summary`);
+        const summaryRes = await axios.get(`http://18.183.223.72:8000/ai/contract/${newChatId}/summary`);
         const summaryData = summaryRes.data;
         setForm((prev) => ({
           ...prev,
@@ -149,7 +149,7 @@ export default function AiPageImage({ config }: Props) {
       const prompt = `問題：${form.question}\n回答：`;
       formData.append('prompt', prompt);
 
-      const res = await axios.post('http://localhost:8000/ai/contract/form', formData, {
+      const res = await axios.post('http://18.183.223.72:8000/ai/contract/form', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

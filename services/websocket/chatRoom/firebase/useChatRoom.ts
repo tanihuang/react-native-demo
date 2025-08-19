@@ -23,7 +23,7 @@ export default function useChatRoom() {
 
   const getPublicPath = {
     chatRoomId: 'public',
-    chatRoomName: '大廳',
+    chatRoomName: 'Public',
     group: 1,
   };
 

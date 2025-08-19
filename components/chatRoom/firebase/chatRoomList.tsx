@@ -53,7 +53,7 @@ const ChatRoomList = forwardRef((props: any, ref) => {
           name="chat"
           options={{
             ...initialOptions,
-            title: '聊天室列表',
+            title: 'Chatrooms',
             headerLeft: () => null,
           }}
         >
@@ -84,7 +84,7 @@ const ChatRoomList = forwardRef((props: any, ref) => {
                     <TouchableOpacity
                       onPress={() => {
                         navigation.goBack();
-                        dispatch(setChatRoomItem(getPublicPath));
+                        // dispatch(setChatRoomItem(getPublicPath));
                       }}
                       style={{ paddingHorizontal: 10 }}
                     >

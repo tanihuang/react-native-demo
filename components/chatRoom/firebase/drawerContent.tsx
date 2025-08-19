@@ -39,6 +39,7 @@ const DrawerContent = forwardRef((props: any, ref) => {
     const { members, chatRoomName, group, lastMessage, lastMessageTimestamp } = item;
     const isActive = chatRoom.chatRoomId === item.chatRoomId;
 
+    // 0: private, 1: public
     if (group === 1) {
       return (
         <TouchableOpacity

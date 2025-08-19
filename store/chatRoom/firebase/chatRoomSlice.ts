@@ -34,7 +34,7 @@ const chatRoomSlice = createSlice({
     setChatRoomList: (state, action) => {
       const initialState = {
         chatRoomId: 'public',
-        chatRoomName: '大廳',
+        chatRoomName: 'Public',
         group: 1,
       };
     

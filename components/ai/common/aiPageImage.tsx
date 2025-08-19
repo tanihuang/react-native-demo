@@ -104,7 +104,7 @@ export default function AiPageImage({ config }: Props) {
       }
 
       const { endpoint, confidence, threshold } = config[mode];
-      const res = await axios.post(`http://localhost:8000${endpoint}`, formData, {
+      const res = await axios.post(`http://18.183.223.72:8000${endpoint}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

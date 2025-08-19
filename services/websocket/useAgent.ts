@@ -2,7 +2,7 @@
 let socket: any;
 
 export function connectWebSocket(onMessage: any) {
-  socket = new WebSocket('ws://localhost:8000/ws');  // ⬅ 這裡改成你的後端 URL
+  socket = new WebSocket('ws://18.183.223.72:8000/ws');  // ⬅ 這裡改成你的後端 URL
 
   socket.onmessage = (event: any) => {
     const data = JSON.parse(event.data);

@@ -35,6 +35,6 @@ export default function LoadingDots({
 
 const styles = StyleSheet.create({
   text: {
-  
+    fontWeight: '500',
   }
 });
